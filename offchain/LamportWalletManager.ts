@@ -103,7 +103,8 @@ export default class LamportWalletManager {
         const {
             factoryAddress,
             rpc,
-            chainid
+            chainid,
+            price
         } = supportedBlockchains.find((bc:any) => bc.name === blockchain)
 
         const provider = ethers.getDefaultProvider(rpc)
@@ -114,7 +115,7 @@ export default class LamportWalletManager {
 
         const kt: KeyTracker = new KeyTracker()
 
-        const tx = await factory.createWalletEther(eip1271Wallet.address, kt.pkh, { value: ethers.utils.parseEther("0.01") })
+        const tx = await factory.createWalletEther(eip1271Wallet.address, kt.pkh, { value: ethers.utils.parseEther(price.toString()) })
 
         const event = (await tx.wait()).events.find((e: any) => e.event === "WalletCreated")
         const walletAddress = event.args.walletAddress

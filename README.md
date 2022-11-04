@@ -44,3 +44,7 @@ Recover Wallet:
 Execute Complex Transactions:
 
     npm start execute <path to wallet file> <contract address> <function signature> <path to contracts json file with abi> <...remainder of arguments are passed to complex function call>
+
+To View The Documentation For A Command:
+    
+        npm start help <command name>

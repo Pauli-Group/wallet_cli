@@ -1,2 +1,0 @@
-# to send an erc20
-npx tsc ; node javascript_build/main.js execute "walletfiles/lwm.json" 0x773a6E8Dde69EB57167Bc5fA0C57e182C693ACEd "transfer(address,uint256)" Dollar.json 0x80208D00A045c8325e398EEEeE348e0477a3a5fB 100000

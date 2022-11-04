@@ -285,7 +285,7 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_sendEther(toAddress: string, _amount: string | number | ethers.BigNumber) {
+    async call_sendEther(toAddress: string, _amount: string | number | ethers.BigNumber) : Promise<string> {
         const amount: string = ethers.BigNumber.from(_amount).toString()
         console.log(`LamportWalletManager::call_sendEther (toAddress: ${toAddress}, amount: ${amount})`)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
@@ -312,7 +312,8 @@ export default class LamportWalletManager {
             sig.map(s => `0x${s}`),
         )
 
-        console.log(`tx sent: ${tx.hash}`)
+        // console.log(`tx sent: ${tx.hash}`)
+        return tx.hash
     }
 
     /**

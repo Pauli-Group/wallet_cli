@@ -31,7 +31,8 @@ program
     .argument('<string>', 'amount of ETH to send')
     .action(async (fname: string, address: string, amount: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        await lwm.call_sendEther(address, amount)
+        const tx_hash = await lwm.call_sendEther(address, amount)
+        process.stdout.write(`Transaction Hash: ${tx_hash}\n`)
         saveLWMFile(lwm, fname)
     })
 

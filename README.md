@@ -51,4 +51,4 @@ To View The Documentation For A Command:
 
 To Change The RPC Endpoint (potentially to your own full node):
 
-    edit the ""rpc"" field of the relevent blockchain in supportedBlockchains.json and rebuild with `npx tsc`
+    edit the `rpc` field of the relevent blockchain in supportedBlockchains.json and rebuild with `npx tsc`

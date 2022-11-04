@@ -19,28 +19,28 @@ Build:
 
 Buy New Wallet:
     
-    node main.js new <private key of gas paying EOA>
+    npm start new <private key of gas paying EOA>
 
 View Wallet Details:
 
-    node main.js view <path to wallet file>
+    npm start view <path to wallet file>
 
 Add Currency: 
 
-    node main.js addcurrency  <currency address>
+    npm start addcurrency  <currency address>
 
 Transfer ERC20 token:
 
-    node main.js transfer <path to wallet file> <erc20 contract address> <address to send to> <amount to send>
+    npm start transfer <path to wallet file> <erc20 contract address> <address to send to> <amount to send>
 
 Setup Recovery Keys:
 
-    node main.js setrecovery <path to wallet file>
+    npm start setrecovery <path to wallet file>
 
 Recover Wallet:
 
-    node main.js recover <path to wallet file>
+    npm start recover <path to wallet file>
 
 Execute Complex Transactions:
 
-    node main.js execute <path to wallet file> <contract address> <function signature> <path to contracts json file with abi> <...remainder of arguments are passed to complex function call>
+    npm start execute <path to wallet file> <contract address> <function signature> <path to contracts json file with abi> <...remainder of arguments are passed to complex function call>

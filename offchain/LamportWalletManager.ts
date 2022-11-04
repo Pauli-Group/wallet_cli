@@ -2,10 +2,12 @@ import { ethers } from 'ethers'
 import { hash_b, mk_key_pair, sign_hash, verify_signed_hash } from './functions';
 import KeyTracker from './KeyTracker'
 import { KeyPair, LamportKeyPair } from './Types'
+import * as _supportedBlockchains from '../supportedBlockchains.json' 
 import * as _factoryabi from '../abi/factoryabi.json'
 import * as _walletabi from '../abi/walletabi.json'
 import * as _erc20abi from '../abi/erc20abi.json'
 
+const supportedBlockchains = _supportedBlockchains.default
 const factoryabi = _factoryabi.default
 const walletabi = _walletabi.default 
 const erc20abi = _erc20abi.default
@@ -80,7 +82,6 @@ type State = {
     backup_keys: KeyPair[]
 }
 
-const factoryaddress = `0xb19A9C01302446E6E1Ba8D25b9f1210C1b2D329b`
 
 /**
  * @name LamportWalletManager
@@ -99,11 +100,16 @@ export default class LamportWalletManager {
      * @author William Doyle
      */
     static async buyNew(gasPrivateKey: string): Promise<LamportWalletManager> {
-        const url = `https://rpc.sepolia.org`
-        const provider = ethers.getDefaultProvider(url)
+        const {
+            factoryAddress,
+            rpc,
+            chainid
+        } = supportedBlockchains.find((bc:any) => bc.name === 'sepolia')
+
+        const provider = ethers.getDefaultProvider(rpc)
         const gasWallet = new ethers.Wallet(gasPrivateKey, provider)
 
-        const factory = new ethers.Contract(factoryaddress, factoryabi, gasWallet)
+        const factory = new ethers.Contract(factoryAddress, factoryabi, gasWallet)
         const eip1271Wallet = ethers.Wallet.createRandom()
 
         const kt: KeyTracker = new KeyTracker()
@@ -113,7 +119,7 @@ export default class LamportWalletManager {
         const event = (await tx.wait()).events.find((e: any) => e.event === "WalletCreated")
         const walletAddress = event.args.walletAddress
 
-        const _lwm: LamportWalletManager = new LamportWalletManager(walletAddress, '11155111', kt, `https://rpc.sepolia.org`, eip1271Wallet.privateKey, gasWallet.privateKey)
+        const _lwm: LamportWalletManager = new LamportWalletManager(walletAddress, chainid, kt, rpc, eip1271Wallet.privateKey, gasWallet.privateKey)
         return _lwm
     }
 

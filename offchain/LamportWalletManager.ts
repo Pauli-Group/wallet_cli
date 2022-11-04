@@ -99,12 +99,12 @@ export default class LamportWalletManager {
      * @date November 4th 2022
      * @author William Doyle
      */
-    static async buyNew(gasPrivateKey: string): Promise<LamportWalletManager> {
+    static async buyNew(gasPrivateKey: string, blockchain: string): Promise<LamportWalletManager> {
         const {
             factoryAddress,
             rpc,
             chainid
-        } = supportedBlockchains.find((bc:any) => bc.name === 'sepolia')
+        } = supportedBlockchains.find((bc:any) => bc.name === blockchain)
 
         const provider = ethers.getDefaultProvider(rpc)
         const gasWallet = new ethers.Wallet(gasPrivateKey, provider)

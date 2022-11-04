@@ -1,7 +1,6 @@
 import { program } from 'commander'
 import KeyTracker from './KeyTracker'
 import LamportWalletManager from './LamportWalletManager'
-import { ethers } from 'ethers'
 
 const erc20abi = [
     {
@@ -492,8 +491,9 @@ program
     .command('new')
     .description('Buy a new Lamport Wallet')
     .argument('<string>', 'Gas EOA private Key')
-    .action(async (gasKey: string) => {
-        const lwm: LamportWalletManager = await LamportWalletManager.buyNew(gasKey)
+    .argument('<string>', 'name of blockchain to use')
+    .action(async (gasKey: string, blockchain:string) => {
+        const lwm: LamportWalletManager = await LamportWalletManager.buyNew(gasKey, blockchain)
         saveLWMFile(lwm, `walletfiles/new_wallet_${lwm.state.walletAddress}.json`)
     })
 

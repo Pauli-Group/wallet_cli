@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
+    "resolveJsonModule": true,
     "outDir": "javascript_build",
     "typeRoots": [
   "./node_modules/@types",

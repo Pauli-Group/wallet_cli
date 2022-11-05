@@ -90,12 +90,21 @@ program
         saveLWMFile(lwm, fname)
     })
 
+const startTimer = () => {
+    const start = new Date().getTime()
+    return () => {
+        const end = new Date().getTime()
+        return (end - start) / 1000
+    }
+}
+
 program
     .command('view')
     .description('view the current state of the wallet')
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
+const timer = startTimer()
 
         const N = 60
         const M = 15
@@ -153,6 +162,8 @@ program
             row('current pkh', currentPKH)
         }
 
+        process.stdout.write('\n')
+        process.stdout.write(`timer: ${timer()}s\n`)
         process.stdout.write('\n')
     })
 

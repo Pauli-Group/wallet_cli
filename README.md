@@ -8,6 +8,15 @@ Things this repo does:
 - [x] recover a wallet with recovery keys
 - [x] execute arbitrary function calls on the blockchain
 
+Planned Features:
+- [ ] support multiple blockchains (deploy factory + add to supportedBlockchains.json)
+- [ ] maintain a list of "friends" to alias addresses with names
+- [ ] sign messages as specified by EIP-1271
+- [ ] verify signatures as specified by EIP-1271 for other wallets 
+- [ ] track an NFT (ERC721) contract
+- [ ] see a list of known NFTs in my wallet - broken down by contract, showing token id and url
+- [ ] send an NFT (ERC721) to another wallet
+- [ ] change gas wallet
 
 Install: 
 

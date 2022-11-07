@@ -2,15 +2,22 @@ import { ethers } from 'ethers'
 import { hash_b, mk_key_pair, sign_hash, verify_signed_hash } from './functions';
 import KeyTracker from './KeyTracker'
 import { KeyPair, LamportKeyPair } from './Types'
-import * as _supportedBlockchains from '../supportedBlockchains.json' 
+import * as _supportedBlockchains from '../supportedBlockchains.json'
 import * as _factoryabi from '../abi/factoryabi.json'
 import * as _walletabi from '../abi/walletabi.json'
 import * as _erc20abi from '../abi/erc20abi.json'
+import * as _erc721abi from '../abi/erc721abi.json'
 
 const supportedBlockchains = _supportedBlockchains.default
 const factoryabi = _factoryabi.default
-const walletabi = _walletabi.default 
+const walletabi = _walletabi.default
 const erc20abi = _erc20abi.default
+const erc721abi = _erc721abi.default
+
+ type TokenInfo = {
+    tokenId: string
+    tokenURI: string
+ }
 
 function lamport_getCurrentAndNextKeyData(k: KeyTracker): ({
     current_keys: LamportKeyPair;
@@ -80,6 +87,7 @@ type State = {
     eoa_gas_pri: string        // a private key for paying for gas
     currency_contracts: string[]
     backup_keys: KeyPair[]
+    nft_contracts: string[]
 }
 
 
@@ -105,7 +113,7 @@ export default class LamportWalletManager {
             rpc,
             chainid,
             price
-        } = supportedBlockchains.find((bc:any) => bc.name === blockchain)
+        } = supportedBlockchains.find((bc: any) => bc.name === blockchain)
 
         const provider = ethers.getDefaultProvider(rpc)
         const gasWallet = new ethers.Wallet(gasPrivateKey, provider)
@@ -285,7 +293,7 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_sendEther(toAddress: string, _amount: string | number | ethers.BigNumber) : Promise<string> {
+    async call_sendEther(toAddress: string, _amount: string | number | ethers.BigNumber): Promise<string> {
         const amount: string = ethers.BigNumber.from(_amount).toString()
         console.log(`LamportWalletManager::call_sendEther (toAddress: ${toAddress}, amount: ${amount})`)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
@@ -371,6 +379,19 @@ export default class LamportWalletManager {
     }
 
     /**
+     * @name addNFT
+     * @description add an NFT contract address to the list of NFT contracts that the user may be intrested in
+     * @date November 7th 2022
+     * @author William Doyle
+     */
+    addNFT(address: string) {
+        if (this.state.nft_contracts === undefined)
+            this.state.nft_contracts = []
+        this.state.nft_contracts.push(address)
+    }
+
+
+    /**
      * @name getCurrencyInfo
      * @description get the info for a currency given its address
      * @date November 2022
@@ -384,6 +405,29 @@ export default class LamportWalletManager {
         const symbol = await currency.symbol()
         const balance = await currency.balanceOf(this.state.walletAddress)
         return [name, symbol, balance]
+    }
+
+    /**
+     * @name getNFTInfo
+     * @description get the info for an NFT given its address
+     * @date November 7th 2022
+     * @author William Doyle
+     */
+    async getNFTInfo(nftAddress: string): Promise<[string, string, string, TokenInfo[]]> {
+        const provider = ethers.getDefaultProvider(this.state.network_provider_url)
+        const nft = new ethers.Contract(nftAddress, erc721abi, provider)
+
+        const name = await nft.name()
+        const symbol = await nft.symbol()
+        const balance = await nft.balanceOf(this.state.walletAddress)
+        const tokens : TokenInfo[] = []
+
+        // 1. check if implements the enumerable interface
+        // const isEnumerable = await nft.supportsInterface(ethers.utils.id("0x780e9d63"))
+        // console.log(`isEnumerable: ${isEnumerable}`)
+        // if (!isEnumerable) 
+        //     return [name, symbol, balance, tokens]
+        return [name, symbol, balance, tokens]
     }
 
     /**

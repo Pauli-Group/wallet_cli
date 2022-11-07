@@ -18,6 +18,14 @@ function saveLWMFile(lwm: LamportWalletManager, fname: string) {
     fs.writeFileSync(fname, s)
 }
 
+const startTimer = () => {
+    const start = new Date().getTime()
+    return () => {
+        const end = new Date().getTime()
+        return (end - start) / 1000
+    }
+}
+
 program
     .name('Lamport Wallet CLI by Pauli Group')
     .description('A CLI for managing Lamport wallets')
@@ -90,13 +98,7 @@ program
         saveLWMFile(lwm, fname)
     })
 
-const startTimer = () => {
-    const start = new Date().getTime()
-    return () => {
-        const end = new Date().getTime()
-        return (end - start) / 1000
-    }
-}
+
 
 program
     .command('view')
@@ -106,11 +108,16 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
+        
         const promises_of_nsb = (lwm.state.currency_contracts.map(
             async (c) => {
                 const [name, symbol, balance] = await lwm.getCurrencyInfo(c)
                 return [name, symbol, balance]
             }
+        ))
+
+        const promises_of_nsb_for_nft = (lwm.state.nft_contracts.map(
+            (c) => lwm.getNFTInfo(c)
         ))
 
         const N = 60
@@ -145,11 +152,20 @@ program
 
         for (let i = 0; i < lwm.state.currency_contracts.length; i++) {
             const currency = lwm.state.currency_contracts[i]
-            // const [name, symbol, balance] = await lwm.getCurrencyInfo(currency)
-            const [name, symbol, balance] = await promises_of_nsb[i] 
-            // const char : string = ['.', '_'][i % 2] 
+            const [name, symbol, balance] = await promises_of_nsb[i]
             const char = '.'
             process.stdout.write(`\t${name.padEnd(M + (M / 2), char)}${symbol.padEnd(M, char)}${balance.toString().padEnd(N, char)}${currency}\n`)
+        }
+
+        process.stdout.write(`\n`)
+        process.stdout.write(`NFTs\n`)
+        
+        for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
+            const nft = lwm.state.nft_contracts[i]
+            const [name, symbol, balance, tokenInfo] = await promises_of_nsb_for_nft[i]
+            process.stdout.write(`\t${name.padEnd(M + (M / 2), '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
+            for (let i = 0; i < tokenInfo.length; i++) 
+                process.stdout.write(`\t\t${tokenInfo[i].tokenId}\t\t${tokenInfo[i].tokenURI}\n`)
         }
 
         process.stdout.write('\n')
@@ -185,6 +201,18 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         lwm.addCurrency(address)
         saveLWMFile(lwm, fname)
+    })
+
+program
+    .command('addnft')
+    .description('add an nft contract to the wallet')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the address of the nft contract')
+    .action(async (fname: string, address: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        lwm.addNFT(address)
+        saveLWMFile(lwm, fname)
+        process.stdout.write(`addnft - finished!\n`)
     })
 
 program

@@ -1,9 +1,16 @@
 [
     {
-        "name":"sepolia",
-        "factoryAddress":"0xb19A9C01302446E6E1Ba8D25b9f1210C1b2D329b",
-        "rpc":"https://rpc.sepolia.org",
+        "name": "sepolia",
+        "factoryAddress": "0xb19A9C01302446E6E1Ba8D25b9f1210C1b2D329b",
+        "rpc": "https://rpc.sepolia.org",
         "chainid": "11155111",
-        "price":"0.01"
+        "price": "0.01"
+    },
+    {
+        "name": "moonbase",
+        "factoryAddress": "0xB6FC3BcAFd24CC6d8B56909Ca76BDfc64a40138d",
+        "rpc": "https://rpc.testnet.moonbeam.network",
+        "chainid": "1287",
+        "price": "0.01"
     }
 ]

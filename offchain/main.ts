@@ -104,7 +104,14 @@ program
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-const timer = startTimer()
+        const timer = startTimer()
+
+        const promises_of_nsb = (lwm.state.currency_contracts.map(
+            async (c) => {
+                const [name, symbol, balance] = await lwm.getCurrencyInfo(c)
+                return [name, symbol, balance]
+            }
+        ))
 
         const N = 60
         const M = 15
@@ -135,9 +142,11 @@ const timer = startTimer()
 
         process.stdout.write(`Currencies\n`)
 
+
         for (let i = 0; i < lwm.state.currency_contracts.length; i++) {
             const currency = lwm.state.currency_contracts[i]
-            const [name, symbol, balance] = await lwm.getCurrencyInfo(currency)
+            // const [name, symbol, balance] = await lwm.getCurrencyInfo(currency)
+            const [name, symbol, balance] = await promises_of_nsb[i] 
             // const char : string = ['.', '_'][i % 2] 
             const char = '.'
             process.stdout.write(`\t${name.padEnd(M + (M / 2), char)}${symbol.padEnd(M, char)}${balance.toString().padEnd(N, char)}${currency}\n`)
@@ -183,7 +192,7 @@ program
     .description('Buy a new Lamport Wallet')
     .argument('<string>', 'Gas EOA private Key')
     .argument('<string>', 'name of blockchain to use')
-    .action(async (gasKey: string, blockchain:string) => {
+    .action(async (gasKey: string, blockchain: string) => {
         const lwm: LamportWalletManager = await LamportWalletManager.buyNew(gasKey, blockchain)
         saveLWMFile(lwm, `walletfiles/new_wallet_${lwm.state.walletAddress}.json`)
     })

@@ -1,4 +1,4 @@
-npm start view "walletfiles/lwm.json"
+# npm start view "walletfiles/lwm.json"
 # npm start sendeth "walletfiles/lwm.json" 0xF696Dde0Fc5157F70de01a00C013dF9851F5377B 1499
 # npm start setrecovery "walletfiles/lwm.json"
 # npm start recover "walletfiles/lwm.json"

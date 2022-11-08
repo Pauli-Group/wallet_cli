@@ -214,6 +214,17 @@ program
     })
 
 program
+    .command('viewnfts')
+    .description('view the nfts in the wallet')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the address of the nft contract')
+    .action(async (fname: string, address: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        const myTokenIds = await lwm.getMyTokens(address)
+        process.stdout.write(`myTokenIds: ${myTokenIds}\n`)
+    })
+
+program
     .command('new')
     .description('Buy a new Lamport Wallet')
     .argument('<string>', 'Gas EOA private Key')

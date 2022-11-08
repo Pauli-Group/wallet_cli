@@ -423,6 +423,22 @@ export default class LamportWalletManager {
         return [name, symbol, balance]
     }
 
+    async getMyTokens(nftAddress : string) : Promise<null | string[]> {
+        const provider = ethers.getDefaultProvider(this.state.network_provider_url)
+        const nft = new ethers.Contract(nftAddress, erc721abi, provider)
+
+        // 1. determine if implements ERC721Enumerable
+        const isEnumerable = await nft.supportsInterface("0x780e9d63")
+        // 2. if it does not >> early return
+        if (!isEnumerable)
+            return []
+        // 3. if it does >> use the tokenOfOwnerByIndex function to get all the tokens
+        const balance = await nft.balanceOf(this.state.walletAddress)
+        const p_tokens = Array.from({ length: balance.toNumber() }, (_, i) => nft.tokenOfOwnerByIndex(this.state.walletAddress, i))
+        // 4. return the tokens
+        return await Promise.all(p_tokens)
+    }
+
     /**
      * @name pkh_fromChain
      * @description get the current public key hash as it is on chain (source this data from chain: not from the KeyTracker)

@@ -68,7 +68,7 @@ program
 
 program
     .command('execute')
-    .description('call the wallets execute function to execute arbitrary contract functions')
+    .description('call the wallets execute function to execute arbitrary contract functions. Note that friond alies may not work in some cases while using this command.')
     .argument('<string>', 'the location of the key file')
     .argument('<string>', 'the address of the contract to call')
     .argument('<string>', 'the signature of the function to call (e.g. "transfer(address,uint256)")')
@@ -96,10 +96,32 @@ program
     .argument('<string>', 'the amount of tokens to transfer')
     .action(async (fname: string, address: string, to: string, amount: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        await lwm.call_execute(address, 'transfer(address,uint256)', [to, amount], erc20abi)
+        await lwm.call_execute(address, 'transfer(address,uint256)', [lwm.nameOrAddressToAddress(to), amount], erc20abi)
         saveLWMFile(lwm, fname)
     })
 
+program
+    .command('ecdsasign')
+    .description('sign a message using the ecdsa signing key.')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the message to sign')
+    .action(async (fname: string, message: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        // sign message
+        const sig = await lwm.eip1271Sign(message)
+        process.stdout.write(`Signature: ${sig}\n`)
+
+        // save to file system so user can do whatever they want with it
+        const fs = require('fs')
+        fs.writeFileSync(`signedmessages/${message.replace(/\s+/g, '')}_${lwm.state.walletAddress}_${lwm.state.chainId}.json`, JSON.stringify({ // TODO: double check this regular expression.. 
+            signature: sig,
+            message: message,
+            scw_address: lwm.state.walletAddress,
+            chainid: lwm.state.chainId,
+            ts: Date.now()
+        }, null, 2))
+        process.stdout.write(`Signature saved in 'signedmessages' directory\n`)
+    })
 
 
 program
@@ -190,6 +212,13 @@ program
         process.stdout.write('\n')
         process.stdout.write(`timer: ${timer()}s\n`)
         process.stdout.write('\n')
+
+        // display table of friends
+        process.stdout.write('Friends\n')
+        for (let i = 0; i < (lwm.state?.friends ?? []).length; i++) {
+            const friend = lwm.state.friends[i]
+            process.stdout.write(`\t${friend.name.padEnd(64, '.')} ${friend.address}\n`)
+        }
     })
 
 program
@@ -252,6 +281,19 @@ program
 
         saveLWMFile(lwm, fname)
         console.log(`transfernft - finished!`)
+    })
+
+program
+    .command('addfriend')
+    .description('add an alias to to an address')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the alias')
+    .argument('<string>', 'the address')
+    .action(async (fname: string, alias: string, address: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        lwm.addFriend(alias, address)
+        saveLWMFile(lwm, fname)
+        process.stdout.write(`addfriend - finished!\n`)
     })
 
 program

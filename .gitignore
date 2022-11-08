@@ -3,5 +3,6 @@
 /javascript_build
 /keys
 /walletfiles
+/signedmessages
 .secret
 .env

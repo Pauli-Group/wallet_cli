@@ -19,6 +19,11 @@ type TokenInfo = {
     tokenURI: string
 }
 
+type Friend = {
+    address: string
+    name: string
+}
+
 function lamport_getCurrentAndNextKeyData(k: KeyTracker): ({
     current_keys: LamportKeyPair;
     next_keys: LamportKeyPair;
@@ -88,6 +93,8 @@ type State = {
     currency_contracts: string[]
     backup_keys: KeyPair[]
     nft_contracts: string[]
+    friends: Friend[]
+
 }
 
 
@@ -279,7 +286,8 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_execute(contractAddress: string, fsig: string, args: string[], abi: any) : Promise<any> {
+    async call_execute(_contractAddress: string, fsig: string, args: string[], abi: any): Promise<any> {
+        const contractAddress = this.nameOrAddressToAddress(_contractAddress)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const gasWallet = new ethers.Wallet(this.state.eoa_gas_pri, provider)
         const lamportwallet: ethers.Contract = new ethers.Contract(this.state.walletAddress, walletabi, gasWallet)
@@ -293,7 +301,8 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_sendEther(toAddress: string, _amount: string | number | ethers.BigNumber): Promise<string> {
+    async call_sendEther(_toAddress: string, _amount: string | number | ethers.BigNumber): Promise<string> {
+        const toAddress = this.nameOrAddressToAddress(_toAddress)
         const amount: string = ethers.BigNumber.from(_amount).toString()
         console.log(`LamportWalletManager::call_sendEther (toAddress: ${toAddress}, amount: ${amount})`)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
@@ -331,7 +340,8 @@ export default class LamportWalletManager {
      * @date November 2022
      * @author William Doyle
      * */
-    private async ethBalanceOf(addr: string): Promise<string> {
+    private async ethBalanceOf(_addr: string): Promise<string> {
+        const addr = this.nameOrAddressToAddress(_addr)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         return (await provider.getBalance(addr)).toString()
     }
@@ -372,7 +382,8 @@ export default class LamportWalletManager {
      * @date November 2022
      * @author William Doyle 
      */
-    addCurrency(address: string) {
+    addCurrency(_address: string) {
+        const address = this.nameOrAddressToAddress(_address)
         if (this.state.currency_contracts === undefined)
             this.state.currency_contracts = []
         this.state.currency_contracts.push(address)
@@ -384,7 +395,8 @@ export default class LamportWalletManager {
      * @date November 7th 2022
      * @author William Doyle
      */
-    addNFT(address: string) {
+    addNFT(_address: string) {
+        const address = this.nameOrAddressToAddress(_address)
         if (this.state.nft_contracts === undefined)
             this.state.nft_contracts = []
         this.state.nft_contracts.push(address)
@@ -392,12 +404,34 @@ export default class LamportWalletManager {
 
 
     /**
+     * @name addFriend
+     * @description add an alias for an address
+     * @date November 8th 2022
+     * @author William Doyle
+     */
+    addFriend(alias: string, _address: string) {
+        const address = this.nameOrAddressToAddress(_address)
+        if (this.state.friends === undefined)
+            this.state.friends = []
+        if (this.state.friends.map(f => f.name).includes(alias))
+            throw new Error(`LamportWalletManager::addFriend: alias ${alias} already exists`)
+        if (this.state.friends.map(f => f.address).includes(address))
+            throw new Error(`LamportWalletManager::addFriend: an alies for this address already exists`)
+        const nfriend = {
+            name: alias,
+            address: address
+        } as Friend
+        this.state.friends.push(nfriend)
+    }
+
+    /**
      * @name getCurrencyInfo
      * @description get the info for a currency given its address
      * @date November 2022
      * @author William Doyle
      * */
-    async getCurrencyInfo(currencyAddress: string): Promise<[string, string, string]> {
+    async getCurrencyInfo(_currencyAddress: string): Promise<[string, string, string]> {
+        const currencyAddress = this.nameOrAddressToAddress(_currencyAddress)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const currency = new ethers.Contract(currencyAddress, erc20abi, provider)
 
@@ -413,7 +447,8 @@ export default class LamportWalletManager {
      * @date November 7th 2022
      * @author William Doyle
      */
-    async getNFTInfo(nftAddress: string): Promise<[string, string, string]> {
+    async getNFTInfo(_nftAddress: string): Promise<[string, string, string]> {
+        const nftAddress = this.nameOrAddressToAddress(_nftAddress)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const nft = new ethers.Contract(nftAddress, erc721abi, provider)
 
@@ -429,7 +464,8 @@ export default class LamportWalletManager {
      * @date November 8th 2022
      * @author William Doyle
      */
-    async getMyTokens(nftAddress: string): Promise<null | TokenInfo[]> {
+    async getMyTokens(_nftAddress: string): Promise<null | TokenInfo[]> {
+        const nftAddress = this.nameOrAddressToAddress(_nftAddress)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const nft = new ethers.Contract(nftAddress, erc721abi, provider)
 
@@ -458,7 +494,9 @@ export default class LamportWalletManager {
      * @date November 8th 2022
      * @author William Doyle
      */
-    async transferNft(nftAddress: string, tokenId: string, toAddress: string) : Promise<any>{
+    async transferNft(_nftAddress: string, tokenId: string, _toAddress: string): Promise<any> {
+        const nftAddress = this.nameOrAddressToAddress(_nftAddress)
+        const toAddress = this.nameOrAddressToAddress(_toAddress)
         return await this.call_execute(nftAddress, 'transferFrom(address,address,uint256)', [this.state.walletAddress, toAddress, tokenId], erc721abi)
     }
 
@@ -472,5 +510,32 @@ export default class LamportWalletManager {
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const lamportwallet: ethers.Contract = new ethers.Contract(this.state.walletAddress, walletabi, provider)
         return await lamportwallet.getPKH()
+    }
+
+    /**
+     * @name nameOrAddressToAddress
+     * @description convert a name or address to just an address (name must be a friend)
+     * @date November 8th 2022
+     * @author William Doyle
+     */
+    nameOrAddressToAddress(nameOrAddress: string): string {
+        const friend = this.state.friends.find(f => f.name === nameOrAddress)
+        if (friend === undefined)
+            return nameOrAddress
+        return friend.address
+    }
+
+
+    /**
+     * @name eip1271Sign
+     * @description sign a message using the eip1271 standard
+     * @date November 8th 2022
+     * @author William Doyle
+     */
+    async eip1271Sign(message: string): Promise<string> {
+        const messageHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(message))
+        const signingWallet = new ethers.Wallet(this.state.eoa_signing_pri)
+        const signature = await signingWallet.signMessage(messageHash)
+        return signature
     }
 }

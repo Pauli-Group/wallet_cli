@@ -14,10 +14,10 @@ const walletabi = _walletabi.default
 const erc20abi = _erc20abi.default
 const erc721abi = _erc721abi.default
 
- type TokenInfo = {
+type TokenInfo = {
     tokenId: string
     tokenURI: string
- }
+}
 
 function lamport_getCurrentAndNextKeyData(k: KeyTracker): ({
     current_keys: LamportKeyPair;
@@ -423,7 +423,7 @@ export default class LamportWalletManager {
         return [name, symbol, balance]
     }
 
-    async getMyTokens(nftAddress : string) : Promise<null | string[]> {
+    async getMyTokens(nftAddress: string): Promise<null | TokenInfo[]> {
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const nft = new ethers.Contract(nftAddress, erc721abi, provider)
 
@@ -431,10 +431,17 @@ export default class LamportWalletManager {
         const isEnumerable = await nft.supportsInterface("0x780e9d63")
         // 2. if it does not >> early return
         if (!isEnumerable)
-            return []
+            return null
         // 3. if it does >> use the tokenOfOwnerByIndex function to get all the tokens
         const balance = await nft.balanceOf(this.state.walletAddress)
-        const p_tokens = Array.from({ length: balance.toNumber() }, (_, i) => nft.tokenOfOwnerByIndex(this.state.walletAddress, i))
+        const p_tokens = Array.from({ length: balance.toNumber() }, async (_, i) => {
+            const tid = await nft.tokenOfOwnerByIndex(this.state.walletAddress, i)
+            const turi = await nft.tokenURI(tid)
+            return {
+                tokenId: tid,
+                tokenURI: turi
+            } as TokenInfo
+        })
         // 4. return the tokens
         return await Promise.all(p_tokens)
     }

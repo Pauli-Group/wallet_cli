@@ -108,7 +108,7 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
-        
+
         const promises_of_nsb = (lwm.state.currency_contracts.map(
             async (c) => {
                 const [name, symbol, balance] = await lwm.getCurrencyInfo(c)
@@ -159,7 +159,7 @@ program
 
         process.stdout.write(`\n`)
         process.stdout.write(`NFTs\n`)
-        
+
         for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
             const nft = lwm.state.nft_contracts[i]
             const [name, symbol, balance] = await promises_of_nsb_for_nft[i]
@@ -220,8 +220,17 @@ program
     .argument('<string>', 'the address of the nft contract')
     .action(async (fname: string, address: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        const myTokenIds = await lwm.getMyTokens(address)
-        process.stdout.write(`myTokenIds: ${myTokenIds}\n`)
+        const myTokens = await lwm.getMyTokens(address)
+        if (myTokens === null) {
+            process.stdout.write(`this contract (${address}) does not support ERC721Enumerable\n`)
+            return
+        }
+        // process.stdout.write(`myTokens: ${myTokens}\n`)
+        myTokens.forEach((token) => {
+            // process.stdout.write(`${token}\n`)
+            process.stdout.write(`token id...........${token.tokenId}\n`)
+            process.stdout.write(`token uri.........${token.tokenURI}\n\n`)
+        })
     })
 
 program

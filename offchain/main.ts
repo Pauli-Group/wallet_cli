@@ -2,8 +2,10 @@ import { program } from 'commander'
 import KeyTracker from './KeyTracker'
 import LamportWalletManager from './LamportWalletManager'
 import * as _erc20abi from '../abi/erc20abi.json'
+import * as _erc721abi from '../abi/erc721abi.json'
 
 const erc20abi = _erc20abi.default
+const erc721abi = _erc721abi.default
 
 function loadLWMFile(fname: string): LamportWalletManager {
     const fs = require('fs')
@@ -231,6 +233,25 @@ program
             process.stdout.write(`token id...........${token.tokenId}\n`)
             process.stdout.write(`token uri.........${token.tokenURI}\n\n`)
         })
+    })
+
+
+program
+    .command('transfernft')
+    .description('transfer an nft from the wallet')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the address of the nft contract')
+    .argument('<string>', 'the token id')
+    .argument('<string>', 'the address to send the token to')
+    .action(async (fname: string, nftaddress: string, tokenId: string, to: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+
+        const tx = await lwm.transferNft(nftaddress, tokenId, to)
+
+
+
+        saveLWMFile(lwm, fname)
+        console.log(`transfernft - finished!`)
     })
 
 program

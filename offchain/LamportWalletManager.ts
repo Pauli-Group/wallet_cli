@@ -451,6 +451,17 @@ export default class LamportWalletManager {
         return Promise.all(p_tokens)
     }
 
+
+    /**
+     * @name transfernft
+     * @description transfer an NFT to another address
+     * @date November 8th 2022
+     * @author William Doyle
+     */
+    async transferNft(nftAddress: string, tokenId: string, toAddress: string) {
+        await this.call_execute(nftAddress, 'transferFrom(address,address,uint256)', [this.state.walletAddress, toAddress, tokenId], erc721abi)
+    }
+
     /**
      * @name pkh_fromChain
      * @description get the current public key hash as it is on chain (source this data from chain: not from the KeyTracker)

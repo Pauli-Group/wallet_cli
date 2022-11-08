@@ -123,6 +123,16 @@ program
         process.stdout.write(`Signature saved in 'signedmessages' directory\n`)
     })
 
+function printTable(table: string[][]) {
+    process.stdout.write(`${table}\n\n`)
+}
+
+function printTables(tables: string[][][]) {
+    for (const table of tables) {
+        printTable(table)
+        process.stdout.write('---------------\n')
+    }
+}
 
 program
     .command('view')
@@ -131,6 +141,9 @@ program
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
+
+        const tables = await lwm.view()
+        printTables(tables)
 
 
         const promises_of_nsb = (lwm.state.currency_contracts.map(

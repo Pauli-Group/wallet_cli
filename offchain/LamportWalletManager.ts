@@ -544,4 +544,25 @@ export default class LamportWalletManager {
     setGasEOA(eoa_gas_pri: string) {
         this.state.eoa_gas_pri = eoa_gas_pri
     }
+
+/**
+ * @name view
+ * @description gather all the data needed to visualize the wallet, returs an array of matrices of strings
+ * @date November 8th 2022
+ * @author William Doyle
+ */
+    async view () : Promise<string[][][]> {
+        const tables : string[][][] = []
+
+
+        tables.push([
+        // wallet address + balance
+        [this.state.walletAddress, await this.ethBalance()],
+        // same for gas and signing wallets
+        [this.gasWalletAddress, await this.gasEthBalance(this.gasWalletAddress)],
+        [this.signingWalletAddress, await this.gasEthBalance(this.signingWalletAddress)],
+        ])
+
+        return tables
+    }
 }

@@ -1,6 +1,6 @@
 npx tsc
-# npm start view "walletfiles/lwm.json"
-npm start sendeth "walletfiles/lwm.json" pierre 1501
+npm start view "walletfiles/lwm.json"
+# npm start sendeth "walletfiles/lwm.json" pierre 1501
 # npm start sendeth "walletfiles/lwm.json" 0xe6b53292862b90B094BCc38A253ECe8A457810ea 1000000000000000
 # npm start setrecovery "walletfiles/lwm.json"
 # npm start recover "walletfiles/lwm.json"

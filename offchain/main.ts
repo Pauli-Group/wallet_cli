@@ -162,10 +162,8 @@ program
         
         for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
             const nft = lwm.state.nft_contracts[i]
-            const [name, symbol, balance, tokenInfo] = await promises_of_nsb_for_nft[i]
+            const [name, symbol, balance] = await promises_of_nsb_for_nft[i]
             process.stdout.write(`\t${name.padEnd(M + (M / 2), '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
-            for (let i = 0; i < tokenInfo.length; i++) 
-                process.stdout.write(`\t\t${tokenInfo[i].tokenId}\t\t${tokenInfo[i].tokenURI}\n`)
         }
 
         process.stdout.write('\n')

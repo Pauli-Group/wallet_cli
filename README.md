@@ -38,6 +38,10 @@ Add Currency:
 
     npm start addcurrency  <currency address>
 
+Add NFT contract:
+
+    npm start addnft <wallet file> <nft contract address>
+
 Transfer ERC20 token:
 
     npm start transfer <path to wallet file> <erc20 contract address> <address to send to> <amount to send>

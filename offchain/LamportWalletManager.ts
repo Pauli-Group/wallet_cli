@@ -413,21 +413,14 @@ export default class LamportWalletManager {
      * @date November 7th 2022
      * @author William Doyle
      */
-    async getNFTInfo(nftAddress: string): Promise<[string, string, string, TokenInfo[]]> {
+    async getNFTInfo(nftAddress: string): Promise<[string, string, string]> {
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const nft = new ethers.Contract(nftAddress, erc721abi, provider)
 
         const name = await nft.name()
         const symbol = await nft.symbol()
         const balance = await nft.balanceOf(this.state.walletAddress)
-        const tokens : TokenInfo[] = []
-
-        // 1. check if implements the enumerable interface
-        // const isEnumerable = await nft.supportsInterface(ethers.utils.id("0x780e9d63"))
-        // console.log(`isEnumerable: ${isEnumerable}`)
-        // if (!isEnumerable) 
-        //     return [name, symbol, balance, tokens]
-        return [name, symbol, balance, tokens]
+        return [name, symbol, balance]
     }
 
     /**

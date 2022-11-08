@@ -423,6 +423,12 @@ export default class LamportWalletManager {
         return [name, symbol, balance]
     }
 
+    /**
+     * @name getMyTokens
+     * @description get the info for all the tokens on a erc721 contract that belong to the wallet. Returns null if contract does not implement ERC721Enumerable
+     * @date November 8th 2022
+     * @author William Doyle
+     */
     async getMyTokens(nftAddress: string): Promise<null | TokenInfo[]> {
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const nft = new ethers.Contract(nftAddress, erc721abi, provider)
@@ -436,14 +442,13 @@ export default class LamportWalletManager {
         const balance = await nft.balanceOf(this.state.walletAddress)
         const p_tokens = Array.from({ length: balance.toNumber() }, async (_, i) => {
             const tid = await nft.tokenOfOwnerByIndex(this.state.walletAddress, i)
-            const turi = await nft.tokenURI(tid)
             return {
                 tokenId: tid,
-                tokenURI: turi
+                tokenURI: await nft.tokenURI(tid)
             } as TokenInfo
         })
         // 4. return the tokens
-        return await Promise.all(p_tokens)
+        return Promise.all(p_tokens)
     }
 
     /**

@@ -124,7 +124,10 @@ program
     })
 
 function printTable(table: string[][]) {
-    process.stdout.write(`${table}\n\n`)
+    // process.stdout.write(`${table}\n\n`)
+    for (const row of table) {
+        process.stdout.write(`${row.join('\t')}\n`)
+    }
 }
 
 function printTables(tables: string[][][]) {
@@ -142,25 +145,16 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
-        const tables = await lwm.view()
-        printTables(tables)
+        // const tables = await lwm.view()
+        // printTables(tables)
 
-
-        const promises_of_nsb = (lwm.state.currency_contracts.map(
-            async (c) => {
-                const [name, symbol, balance] = await lwm.getCurrencyInfo(c)
-                return [name, symbol, balance]
-            }
-        ))
-
-        const promises_of_nsb_for_nft = (lwm.state.nft_contracts.map(
-            (c) => lwm.getNFTInfo(c)
-        ))
+        const promises_of_nsb = lwm.state.currency_contracts.map(c => lwm.getCurrencyInfo(c))
+        const promises_of_nsb_for_nft = lwm.state.nft_contracts.map(c => lwm.getNFTInfo(c))
 
         const N = 60
         const M = 15
 
-        const row = (a: string, b: string) => process.stdout.write(`${a.padEnd(M, '.')}${b.padStart(N, '.')}\n`)
+        const row = (a: string, b: string) => process.stdout.write(`${a.padEnd(N, '.')} ${b}\n`)
         row('address', lwm.state.walletAddress)
 
         const balance = await lwm.ethBalance()
@@ -191,7 +185,7 @@ program
             const currency = lwm.state.currency_contracts[i]
             const [name, symbol, balance] = await promises_of_nsb[i]
             const char = '.'
-            process.stdout.write(`\t${name.padEnd(M + (M / 2), char)}${symbol.padEnd(M, char)}${balance.toString().padEnd(N, char)}${currency}\n`)
+            process.stdout.write(`\t${name.padEnd(M + (M / 2), char)} ${symbol.padEnd(M, char)} ${balance.toString().padEnd(N, char)} ${currency}\n`)
         }
 
         process.stdout.write(`\n`)

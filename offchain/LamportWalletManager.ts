@@ -555,13 +555,13 @@ export default class LamportWalletManager {
         const tables : string[][][] = []
 
 
-        tables.push([
-        // wallet address + balance
-        [this.state.walletAddress, await this.ethBalance()],
-        // same for gas and signing wallets
-        [this.gasWalletAddress, await this.gasEthBalance(this.gasWalletAddress)],
-        [this.signingWalletAddress, await this.gasEthBalance(this.signingWalletAddress)],
-        ])
+        // tables.push([
+        // // wallet address + balance
+        // [this.state.walletAddress, await this.ethBalance()],
+        // // same for gas and signing wallets
+        // [this.gasWalletAddress, await this.gasEthBalance(this.gasWalletAddress)],
+        // [this.signingWalletAddress, await this.gasEthBalance(this.signingWalletAddress)],
+        // ])
 
         return tables
     }

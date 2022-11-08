@@ -94,7 +94,6 @@ type State = {
     backup_keys: KeyPair[]
     nft_contracts: string[]
     friends: Friend[]
-
 }
 
 
@@ -106,7 +105,7 @@ type State = {
  */
 export default class LamportWalletManager {
 
-    state: State = {} as State
+    state: State = {} as State  // TODO: make this private and add only necessary accessors
 
     /**
      * @name buyNew
@@ -402,7 +401,6 @@ export default class LamportWalletManager {
         this.state.nft_contracts.push(address)
     }
 
-
     /**
      * @name addFriend
      * @description add an alias for an address
@@ -487,7 +485,6 @@ export default class LamportWalletManager {
         return Promise.all(p_tokens)
     }
 
-
     /**
      * @name transfernft
      * @description transfer an NFT to another address
@@ -525,7 +522,6 @@ export default class LamportWalletManager {
         return friend.address
     }
 
-
     /**
      * @name eip1271Sign
      * @description sign a message using the eip1271 standard
@@ -537,5 +533,15 @@ export default class LamportWalletManager {
         const signingWallet = new ethers.Wallet(this.state.eoa_signing_pri)
         const signature = await signingWallet.signMessage(messageHash)
         return signature
+    }
+
+    /**
+     * @name setGasEOA
+     * @description set eoa_signing_pri to change the EOA used to sign EVM level transactions / pay gas fee
+     * @date November 8th 2022
+     * @author William Doyle
+     */
+    setGasEOA(eoa_gas_pri: string) {
+        this.state.eoa_gas_pri = eoa_gas_pri
     }
 }

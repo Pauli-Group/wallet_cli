@@ -297,6 +297,18 @@ program
     })
 
 program
+    .command('setgaseoa')
+    .description('set the private key of the EOA used to pay gas fees')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the private key of the EOA used to pay gas fees')
+    .action(async (fname: string, pk: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        lwm.setGasEOA(pk)
+        saveLWMFile(lwm, fname)
+        process.stdout.write(`${lwm.gasWalletAddress} is now responsable for paying your gas fees\n`)
+    })
+
+program
     .command('new')
     .description('Buy a new Lamport Wallet')
     .argument('<string>', 'Gas EOA private Key')

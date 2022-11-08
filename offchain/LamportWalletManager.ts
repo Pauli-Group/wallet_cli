@@ -279,12 +279,12 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_execute(contractAddress: string, fsig: string, args: string[], abi: any) {
+    async call_execute(contractAddress: string, fsig: string, args: string[], abi: any) : Promise<any> {
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const gasWallet = new ethers.Wallet(this.state.eoa_gas_pri, provider)
         const lamportwallet: ethers.Contract = new ethers.Contract(this.state.walletAddress, walletabi, gasWallet)
 
-        await lamportwallet.execute(...buildExecuteArguments(this.state.kt, fsig, abi, contractAddress, args))
+        return await lamportwallet.execute(...buildExecuteArguments(this.state.kt, fsig, abi, contractAddress, args))
     }
 
     /**
@@ -458,8 +458,8 @@ export default class LamportWalletManager {
      * @date November 8th 2022
      * @author William Doyle
      */
-    async transferNft(nftAddress: string, tokenId: string, toAddress: string) {
-        await this.call_execute(nftAddress, 'transferFrom(address,address,uint256)', [this.state.walletAddress, toAddress, tokenId], erc721abi)
+    async transferNft(nftAddress: string, tokenId: string, toAddress: string) : Promise<any>{
+        return await this.call_execute(nftAddress, 'transferFrom(address,address,uint256)', [this.state.walletAddress, toAddress, tokenId], erc721abi)
     }
 
     /**

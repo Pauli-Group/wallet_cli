@@ -248,7 +248,7 @@ program
 
         const tx = await lwm.transferNft(nftaddress, tokenId, to)
 
-
+        process.stdout.write(`tx hash: ${tx?.hash ?? 'No hash found on returned transaction object'}\n`)
 
         saveLWMFile(lwm, fname)
         console.log(`transfernft - finished!`)

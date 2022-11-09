@@ -205,6 +205,7 @@ export default class LamportWalletManager {
         this.state.eoa_signing_pri = eoa_signing_pri
         this.state.eoa_gas_pri = eoa_gas_pri
         this.state.backup_keys = []
+        this.state.friends = []
     }
 
     /**
@@ -516,7 +517,7 @@ export default class LamportWalletManager {
      * @author William Doyle
      */
     nameOrAddressToAddress(nameOrAddress: string): string {
-        const friend = this.state.friends.find(f => f.name === nameOrAddress)
+        const friend = this.state.friends?.find(f => f.name === nameOrAddress)
         if (friend === undefined)
             return nameOrAddress
         return friend.address

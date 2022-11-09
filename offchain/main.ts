@@ -1,8 +1,10 @@
 import { program } from 'commander'
 import KeyTracker from './KeyTracker'
 import LamportWalletManager from './LamportWalletManager'
+import formatOutput from './formatedOutput'
 import * as _erc20abi from '../abi/erc20abi.json'
 import * as _erc721abi from '../abi/erc721abi.json'
+
 
 const erc20abi = _erc20abi.default
 const erc721abi = _erc721abi.default
@@ -137,6 +139,56 @@ function printTables(tables: string[][][]) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 program
     .command('view')
     .description('view the current state of the wallet')
@@ -145,11 +197,21 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
+        const out = formatOutput([
+            ['a', 'aa'],
+            ['b', 'bb', 'bbb']   ,
+            ['c', 'cc', 'ccc', 'cccc'],
+            ['d', 'dd', 'ddd', 'dddd', 'ddddd'],
+            ['e', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
+        ])
+
+        process.stdout.write(`${out}\n`)
+
         // const tables = await lwm.view()
         // printTables(tables)
 
-        const promises_of_nsb = lwm.state.currency_contracts.map(c => lwm.getCurrencyInfo(c))
-        const promises_of_nsb_for_nft = lwm.state.nft_contracts.map(c => lwm.getNFTInfo(c))
+        const promises_of_nsb = lwm.state?.currency_contracts?.map(c => lwm.getCurrencyInfo(c)) ?? []
+        const promises_of_nsb_for_nft = lwm.state?.nft_contracts?.map(c => lwm.getNFTInfo(c)) ?? []
 
         const N = 60
         const M = 15
@@ -181,7 +243,7 @@ program
         process.stdout.write(`Currencies\n`)
 
 
-        for (let i = 0; i < lwm.state.currency_contracts.length; i++) {
+        for (let i = 0; i < lwm.state.currency_contracts?.length ?? 0; i++) {
             const currency = lwm.state.currency_contracts[i]
             const [name, symbol, balance] = await promises_of_nsb[i]
             const char = '.'
@@ -194,7 +256,8 @@ program
         for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
             const nft = lwm.state.nft_contracts[i]
             const [name, symbol, balance] = await promises_of_nsb_for_nft[i]
-            process.stdout.write(`\t${name.padEnd(M + (M / 2), '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
+            // process.stdout.write(`\t${name.padEnd(M + (M / 2), '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
+            process.stdout.write(`\t${name.padEnd(N, '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
         }
 
         process.stdout.write('\n')
@@ -227,6 +290,56 @@ program
             process.stdout.write(`\t${friend.name.padEnd(64, '.')} ${friend.address}\n`)
         }
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 program
     .command('addcurrency')
@@ -263,9 +376,7 @@ program
             process.stdout.write(`this contract (${address}) does not support ERC721Enumerable\n`)
             return
         }
-        // process.stdout.write(`myTokens: ${myTokens}\n`)
         myTokens.forEach((token) => {
-            // process.stdout.write(`${token}\n`)
             process.stdout.write(`token id...........${token.tokenId}\n`)
             process.stdout.write(`token uri.........${token.tokenURI}\n\n`)
         })
@@ -324,6 +435,5 @@ program
         const lwm: LamportWalletManager = await LamportWalletManager.buyNew(gasKey, blockchain)
         saveLWMFile(lwm, `walletfiles/new_wallet_${lwm.state.walletAddress}.json`)
     })
-
 
 program.parse()

@@ -198,16 +198,14 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
-        const out = formatOutput(df([
+        const out = formatOutput([
             ['a', 'aa'],
-            ['b', 'bbbbb', 'bbb']   ,
+            ['b', 'bbbbb', 'bbb'],
             ['c', 'cc', 'ccc', 'cccccc'],
             ['dddd', 'dd', 'ddd', 'dddd', 'ddddd'],
             ['ee', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
             ['q', 'qq', 'qqq', 'qqqq', 'qq', 'qqqqqq', 'qqqqqq'],
-        ]))
-
-
+        ])
 
         // const tables = await lwm.view()
         // printTables(tables)
@@ -219,28 +217,28 @@ program
         const M = 15
 
         const row = (a: string, b: string) => process.stdout.write(`${a.padEnd(N, '.')} ${b}\n`)
-        row('address', lwm.state.walletAddress)
+        {
+            process.stdout.write('Balances\n')
+            const data: string[][] = []
+            const balance = await lwm.ethBalance()
+            data.push(['address', lwm.state.walletAddress])
+            data.push(['balance', balance])
 
-        const balance = await lwm.ethBalance()
-        row('balance', balance)
 
-        process.stdout.write('\n')
+            const gasAddress = lwm.gasWalletAddress
+            const gasBalance = await lwm.gasEthBalance()
+            data.push(['gas address', gasAddress])
+            data.push(['gas balance', gasBalance])
 
-        const gasAddress = lwm.gasWalletAddress
-        row('gas address', gasAddress)
 
-        const gasBalance = await lwm.gasEthBalance()
-        row('gas balance', gasBalance)
+            const signerAddress = lwm.signingWalletAddress
+            // row('signer address', signerAddress)
+            data.push(['signer balance', signerAddress])
 
-        process.stdout.write('\n')
-
-        const signerAddress = lwm.signingWalletAddress
-        row('signer address', signerAddress)
-
-        const signerBalance = await lwm.signingEthBalance()
-        row('signer balance', signerBalance)
-
-        process.stdout.write('\n')
+            const signerBalance = await lwm.signingEthBalance()
+            data.push(['signer balance', signerBalance])
+            formatOutput(data)
+        }
 
         process.stdout.write(`Currencies\n`)
 
@@ -291,6 +289,7 @@ program
             const friend = lwm.state.friends[i]
             process.stdout.write(`\t${friend.name.padEnd(64, '.')} ${friend.address}\n`)
         }
+
     })
 
 

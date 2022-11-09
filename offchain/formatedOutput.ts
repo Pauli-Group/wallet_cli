@@ -35,6 +35,8 @@ export default function formatOutput(__data: string[][]): void {
         output += (`\n`)
     }
 
+    // output = `⌜${'_'.repeat(maxlinelength - 1)}⌝\n${output}`
+    output = ` ${'_'.repeat(maxlinelength - 1)}\n${output}`
     output += `⌊${'_'.repeat(maxlinelength - 1)}⌋`
     output += `\n`
 

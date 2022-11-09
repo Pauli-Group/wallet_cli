@@ -200,11 +200,11 @@ program
 
         const out = formatOutput(df([
             ['a', 'aa'],
-            ['b', 'bb', 'bbb']   ,
-            ['c', 'cc', 'ccc', 'cccc'],
-            ['d', 'dd', 'ddd', 'dddd', 'ddddd'],
-            ['e', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
-            ['q', 'qq', 'qqq', 'qqqq', 'qq', 'qqqqqq', 'qqqqqqq'],
+            ['b', 'bbbbb', 'bbb']   ,
+            ['c', 'cc', 'ccc', 'cccccc'],
+            ['dddd', 'dd', 'ddd', 'dddd', 'ddddd'],
+            ['ee', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
+            ['q', 'qq', 'qqq', 'qqqq', 'qq', 'qqqqqq', 'qqqqqq'],
         ]))
 
 

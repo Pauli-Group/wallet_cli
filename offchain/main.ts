@@ -2,9 +2,10 @@ import { program } from 'commander'
 import KeyTracker from './KeyTracker'
 import LamportWalletManager from './LamportWalletManager'
 import formatOutput from './formatedOutput'
+import { df } from './functions'
 import * as _erc20abi from '../abi/erc20abi.json'
 import * as _erc721abi from '../abi/erc721abi.json'
-
+import { randomBytes } from 'crypto'
 
 const erc20abi = _erc20abi.default
 const erc721abi = _erc721abi.default
@@ -197,15 +198,16 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
-        const out = formatOutput([
+        const out = formatOutput(df([
             ['a', 'aa'],
             ['b', 'bb', 'bbb']   ,
             ['c', 'cc', 'ccc', 'cccc'],
             ['d', 'dd', 'ddd', 'dddd', 'ddddd'],
             ['e', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
-        ])
+            ['q', 'qq', 'qqq', 'qqqq', 'qq', 'qqqqqq', 'qqqqqqq'],
+        ]))
 
-        process.stdout.write(`${out}\n`)
+
 
         // const tables = await lwm.view()
         // printTables(tables)

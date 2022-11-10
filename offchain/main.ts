@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import KeyTracker from './KeyTracker'
-import LamportWalletManager from './LamportWalletManager'
+import LamportWalletManager, { WaiterCallback } from './LamportWalletManager'
 import formatOutput from './formatedOutput'
 import { df } from './functions'
 import * as _erc20abi from '../abi/erc20abi.json'
@@ -71,32 +71,8 @@ function showReceipt(receipt: ethers.providers.TransactionReceipt) {
     formatOutput(data)
 }
 
-program
-    .name('Lamport Wallet CLI by Pauli Group')
-    .description('A CLI for managing Lamport wallets')
-    .version('0.0.1')
 
-program
-    .command('sendeth')
-    .description('send ETH from lamport wallet to specified address')
-    .argument('<string>', 'the location of the key file')
-    .argument('<string>', 'address to send ETH to')
-    .argument('<string>', 'amount of ETH to send')
-    .action(async (fname: string, address: string, amount: string) => {
-        const lwm: LamportWalletManager = loadLWMFile(fname)
-        const tx_hash = await lwm.call_sendEther(address, amount)
-        process.stdout.write(`Transaction Hash: ${tx_hash}\n`)
-        saveLWMFile(lwm, fname)
-    })
-
-program
-    .command('setrecovery')
-    .description('set ten public key hashes on the contract which can be used to recover this wallet')
-    .argument('<string>', 'the location of the key file')
-    .action(async (fname: string) => {
-        const lwm: LamportWalletManager = loadLWMFile(fname)
-
-        const waiter: () => Promise<ethers.providers.TransactionReceipt> = await lwm.call_setTenRecoveryPKHs()
+async function processReceipt(waiter : WaiterCallback, lwm: LamportWalletManager, fname : string) : Promise<void> {
 
         saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
 
@@ -112,6 +88,65 @@ program
 
         showReceipt(receipt)
 
+}
+
+program
+    .name('Lamport Wallet CLI by Pauli Group')
+    .description('A CLI for managing Lamport wallets')
+    .version('0.0.1')
+
+program
+    .command('sendeth')
+    .description('send ETH from lamport wallet to specified address')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'address to send ETH to')
+    .argument('<string>', 'amount of ETH to send')
+    .action(async (fname: string, address: string, amount: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        // const tx_hash = await lwm.call_sendEther(address, amount)
+        // process.stdout.write(`Transaction Hash: ${tx_hash}\n`)
+        const waiter: WaiterCallback = await lwm.call_sendEther(address, amount)
+
+        processReceipt(waiter, lwm, fname)
+        // saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
+
+        // process.stdout.write(`Waiting for transaction to be confirmed.\n`)
+
+        // const receipt: ethers.providers.TransactionReceipt = await waiter()
+
+        // process.stdout.write(`Confirmed. Saving...\n`)
+        // saveLWMFile(lwm, fname) // also deletes the temporary file
+
+        // process.stdout.write(`Saving receipt...\n`)
+        // saveReceipt(receipt, lwm)
+
+        // showReceipt(receipt)
+        // saveLWMFile(lwm, fname)
+    })
+
+program
+    .command('setrecovery')
+    .description('set ten public key hashes on the contract which can be used to recover this wallet')
+    .argument('<string>', 'the location of the key file')
+    .action(async (fname: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+
+        const waiter: WaiterCallback = await lwm.call_setTenRecoveryPKHs()
+
+        processReceipt(waiter, lwm, fname)
+        // saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
+
+        // process.stdout.write(`Waiting for transaction to be confirmed.\n`)
+
+        // const receipt: ethers.providers.TransactionReceipt = await waiter()
+
+        // process.stdout.write(`Confirmed. Saving...\n`)
+        // saveLWMFile(lwm, fname) // also deletes the temporary file
+
+        // process.stdout.write(`Saving receipt...\n`)
+        // saveReceipt(receipt, lwm)
+
+        // showReceipt(receipt)
     })
 
 program

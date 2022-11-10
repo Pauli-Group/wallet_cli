@@ -11,6 +11,10 @@ import { ethers } from 'ethers'
 const erc20abi = _erc20abi.default
 const erc721abi = _erc721abi.default
 
+/**
+ *  @name startTimer
+ *  @author William Doyle 
+ */
 const startTimer = () => {
     const start = new Date().getTime()
     return () => {
@@ -19,6 +23,12 @@ const startTimer = () => {
     }
 }
 
+/**
+ * @name loadLWMFile
+ * @description loads a LamportWalletManager from a json file given the file path
+ * @date November 2022 
+ * @author William Doyle
+ */
 function loadLWMFile(fname: string): LamportWalletManager {
     const fs = require('fs')
     const s = fs.readFileSync(fname, 'utf8')
@@ -26,7 +36,12 @@ function loadLWMFile(fname: string): LamportWalletManager {
     return lwm
 }
 
-
+/**
+ * @name saveLWMFile
+ * @description saves a LamportWalletManager to a json file, given the file path, also deletes the temporary file if it exists 
+ * @date November 2022
+ * @author William Doyle
+ */
 function saveLWMFile(lwm: LamportWalletManager, fname: string) {
     const s = lwm.toJSON()
     const fs = require('fs')
@@ -39,6 +54,12 @@ function saveLWMFile(lwm: LamportWalletManager, fname: string) {
     }
 }
 
+/**
+ *  @name saveReceipt
+ *  @description saves the TransactionReceipt to a proper file 
+ *  @date November 10th 2022
+ *  @author William Doyle
+ */
 function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm: LamportWalletManager) {
     // use data in lwm to build unique file name
     const fname = `receipts/${lwm.state.chainId}_${lwm.state.walletAddress}.json`
@@ -54,16 +75,28 @@ function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm: LamportW
     fs.writeFileSync(fname, JSON.stringify(data, null, 2))
 }
 
+/**
+ *  @name showReceipt
+ *  @description displays the receipt in a nice format... some details are left out because they are not super relevent or intresting
+ *  @date November 10th 2022
+ *  @author William Doyle 
+ */
 function showReceipt(receipt: ethers.providers.TransactionReceipt) {
     const data: string[][] = []
+
+    process.stdout.write(`\nTransaction Receipt\n`)
 
     data.push([`To`, receipt.to])
     data.push([`From`, receipt.from])
     data.push([`Gas Used`, receipt.gasUsed.toString()])
+    data.push([`Cumulative Gas Used`, receipt.cumulativeGasUsed.toString()])
+    data.push([`Effective Gas Price`, receipt.effectiveGasPrice.toString()])
     data.push([`Block Number`, receipt.blockNumber.toString()])
     data.push([`Block Hash`, receipt.blockHash])
     data.push([`Type`, receipt.type.toString()])
+    data.push([`Byzantium`, receipt.byzantium.toString()])
     data.push([`Confirmations`, receipt.confirmations.toString()])
+    data.push([`Transaction Hash`, receipt.transactionHash])
 
     formatOutput(data)
 }
@@ -313,7 +346,7 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const myTokens : TokenInfo[] | null = await lwm.getMyTokens(address)
         if (myTokens === null) {
-            process.stdout.write(`this contract (${address}) does not support ERC721Enumerable\n`)
+            process.stdout.write(`This Contract (${address}) Does Not Support ERC721Enumerable\n`)
             return
         }
 

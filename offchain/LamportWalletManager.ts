@@ -320,7 +320,6 @@ export default class LamportWalletManager {
     async call_sendEther(_toAddress: string, _amount: string | number | ethers.BigNumber): Promise<WaiterCallback> {
         const toAddress = this.nameOrAddressToAddress(_toAddress)
         const amount: string = ethers.BigNumber.from(_amount).toString()
-        console.log(`LamportWalletManager::call_sendEther (toAddress: ${toAddress}, amount: ${amount})`)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const gasWallet = new ethers.Wallet(this.state.eoa_gas_pri, provider)
 
@@ -349,8 +348,6 @@ export default class LamportWalletManager {
             const provider = ethers.getDefaultProvider(this.state.network_provider_url)
             return await provider.waitForTransaction(tx.hash)
         }
-        // console.log(`tx sent: ${tx.hash}`)
-        // return tx.hash
     }
 
     /**

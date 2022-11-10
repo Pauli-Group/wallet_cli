@@ -8,6 +8,8 @@ const box_drawings = {
         tr: "┐",
         bl: "└",
         br: "┘",
+        top_junction: "┬",
+        bottom_junction: "┴",
     }
 }
 

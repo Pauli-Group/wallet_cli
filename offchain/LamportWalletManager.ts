@@ -436,7 +436,7 @@ export default class LamportWalletManager {
 
         const name = await currency.name()
         const symbol = await currency.symbol()
-        const balance = await currency.balanceOf(this.state.walletAddress)
+        const balance : string = await currency.balanceOf(this.state.walletAddress)
         return [name, symbol, balance]
     }
 

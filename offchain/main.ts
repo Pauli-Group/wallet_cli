@@ -126,19 +126,7 @@ program
         process.stdout.write(`Signature saved in 'signedmessages' directory\n`)
     })
 
-function printTable(table: string[][]) {
-    // process.stdout.write(`${table}\n\n`)
-    for (const row of table) {
-        process.stdout.write(`${row.join('\t')}\n`)
-    }
-}
 
-function printTables(tables: string[][][]) {
-    for (const table of tables) {
-        printTable(table)
-        process.stdout.write('---------------\n')
-    }
-}
 
 
 
@@ -198,14 +186,14 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const timer = startTimer()
 
-        const out = formatOutput([
-            ['a', 'aa'],
-            ['b', 'bbbbb', 'bbb'],
-            ['c', 'cc', 'ccc', 'cccccc'],
-            ['dddd', 'dd', 'ddd', 'dddd', 'ddddd'],
-            ['ee', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
-            ['q', 'qq', 'qqq', 'qqqq', 'qq', 'qqqqqq', 'qqqqqq'],
-        ])
+        // formatOutput([
+        //     ['a', 'aa'],
+        //     ['b', 'bbbbb', 'bbb'],
+        //     ['c', 'cc', 'ccc', 'cccccc'],
+        //     ['dddd', 'dd', 'ddd', 'dddd', 'ddddd'],
+        //     ['ee', 'ee', 'eee', 'eeee', 'eeeee', 'eeeeee'],
+        //     ['q', 'qq', 'qqq', 'qqqq', 'qq', 'qqqqqq', 'qqqqqq'],
+        // ])
 
         // const tables = await lwm.view()
         // printTables(tables)
@@ -232,7 +220,6 @@ program
 
 
             const signerAddress = lwm.signingWalletAddress
-            // row('signer address', signerAddress)
             data.push(['signer balance', signerAddress])
 
             const signerBalance = await lwm.signingEthBalance()
@@ -240,56 +227,86 @@ program
             formatOutput(data)
         }
 
-        process.stdout.write(`Currencies\n`)
-
-
-        for (let i = 0; i < lwm.state.currency_contracts?.length ?? 0; i++) {
-            const currency = lwm.state.currency_contracts[i]
-            const [name, symbol, balance] = await promises_of_nsb[i]
-            const char = '.'
-            process.stdout.write(`\t${name.padEnd(M + (M / 2), char)} ${symbol.padEnd(M, char)} ${balance.toString().padEnd(N, char)} ${currency}\n`)
-        }
-
-        process.stdout.write(`\n`)
-        process.stdout.write(`NFTs\n`)
-
-        for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
-            const nft = lwm.state.nft_contracts[i]
-            const [name, symbol, balance] = await promises_of_nsb_for_nft[i]
-            // process.stdout.write(`\t${name.padEnd(M + (M / 2), '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
-            process.stdout.write(`\t${name.padEnd(N, '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
-        }
-
-        process.stdout.write('\n')
-        process.stdout.write('Recovery PKHs\n')
-
-        for (let i = 0; i < lwm.state.backup_keys.length; i++) {
-            const key = lwm.state.backup_keys[i]
-            const pkh = KeyTracker.pkhFromPublicKey(key.pub)
-            process.stdout.write(`\t${`${i + 1}.`.padEnd(4)}${pkh}\n`)
-        }
-
-        process.stdout.write('\n')
         {
-            const currentPKH = lwm.state.kt.pkh
-            row('current pkh', currentPKH)
+            process.stdout.write(`\nCurrencies\n`)
+
+            const data: string[][] = []
+
+            for (let i = 0; i < lwm.state.currency_contracts?.length ?? 0; i++) {
+                const currency = lwm.state.currency_contracts[i]
+                const [name, symbol, balance] = await promises_of_nsb[i]
+                data.push([currency, name, symbol, balance.toString()])
+                // const char = '.'
+                // process.stdout.write(`\t${name.padEnd(M + (M / 2), char)} ${symbol.padEnd(M, char)} ${balance.toString().padEnd(N, char)} ${currency}\n`)
+            }
+            formatOutput(data)
+
+        }
+
+        {
+            process.stdout.write(`\nNFTs\n`)
+
+            const data: string[][] = []
+
+            for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
+                const nft = lwm.state.nft_contracts[i]
+                const [name, symbol, balance] = await promises_of_nsb_for_nft[i]
+                data.push([nft, name, symbol, balance.toString()])
+                // process.stdout.write(`\t${name.padEnd(M + (M / 2), '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
+                // process.stdout.write(`\t${name.padEnd(N, '.')} ${symbol.padEnd(M, '.')} ${balance.toString().padEnd(N, '.')} ${nft}\n`)
+            }
+
+            formatOutput(data)
+        }
+
+        {
+            process.stdout.write('\nRecovery PKHs\n')
+
+            const data: string[][] = []
+
+            for (let i = 0; i < lwm.state.backup_keys.length; i++) {
+                const key = lwm.state.backup_keys[i]
+                const pkh = KeyTracker.pkhFromPublicKey(key.pub)
+                data.push([pkh])
+                // process.stdout.write(`\t${`${i + 1}.`.padEnd(4)}${pkh}\n`)
+            }
+
+            formatOutput(data)
         }
         {
-            const currentPKH = await lwm.pkh_fromChain()
-            row('current pkh', currentPKH)
+            process.stdout.write('\nCurrent Public Key Hash\n')
+
+            const data: string[][] = []
+            data.push(['From Local Key File', lwm.state.kt.pkh])
+            data.push(['From Blockchain', await lwm.pkh_fromChain()])
+
+            formatOutput(data)
+            // {
+            //     const currentPKH = lwm.state.kt.pkh
+            //     row('current pkh', currentPKH)
+            // }
+            // {
+            //     const currentPKH = await lwm.pkh_fromChain()
+            //     row('current pkh', currentPKH)
+            // }
+        }
+
+
+        {
+            // display table of friends
+            process.stdout.write('Friends\n')
+            const data: string[][] = []
+            for (let i = 0; i < (lwm.state?.friends ?? []).length; i++) {
+                const friend = lwm.state.friends[i]
+                data.push([friend.name, friend.address])
+                // process.stdout.write(`\t${friend.name.padEnd(64, '.')} ${friend.address}\n`)
+            }
+            formatOutput(data)
         }
 
         process.stdout.write('\n')
         process.stdout.write(`timer: ${timer()}s\n`)
         process.stdout.write('\n')
-
-        // display table of friends
-        process.stdout.write('Friends\n')
-        for (let i = 0; i < (lwm.state?.friends ?? []).length; i++) {
-            const friend = lwm.state.friends[i]
-            process.stdout.write(`\t${friend.name.padEnd(64, '.')} ${friend.address}\n`)
-        }
-
     })
 
 

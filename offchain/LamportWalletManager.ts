@@ -354,6 +354,18 @@ export default class LamportWalletManager {
     }
 
     /**
+         * @name transfernft
+         * @description transfer an NFT to another address
+         * @date November 8th 2022
+         * @author William Doyle
+         */
+    async transferNft(_nftAddress: string, tokenId: string, _toAddress: string): Promise<WaiterCallback> {
+        const nftAddress = this.nameOrAddressToAddress(_nftAddress)
+        const toAddress = this.nameOrAddressToAddress(_toAddress)
+        return this.call_execute(nftAddress, 'transferFrom(address,address,uint256)', [this.state.walletAddress, toAddress, tokenId], erc721abi)
+    }
+
+    /**
      * @name ethBalanceOf
      * @description get the Eth balance of an address
      * @note this function is marked private because the interface does not need direct access to it
@@ -506,17 +518,7 @@ export default class LamportWalletManager {
         return Promise.all(p_tokens)
     }
 
-    /**
-     * @name transfernft
-     * @description transfer an NFT to another address
-     * @date November 8th 2022
-     * @author William Doyle
-     */
-    async transferNft(_nftAddress: string, tokenId: string, _toAddress: string): Promise<any> {
-        const nftAddress = this.nameOrAddressToAddress(_nftAddress)
-        const toAddress = this.nameOrAddressToAddress(_toAddress)
-        return await this.call_execute(nftAddress, 'transferFrom(address,address,uint256)', [this.state.walletAddress, toAddress, tokenId], erc721abi)
-    }
+
 
     /**
      * @name pkh_fromChain

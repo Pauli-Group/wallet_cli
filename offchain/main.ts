@@ -146,7 +146,7 @@ program
         const obj = JSON.parse(s)
         const abi = obj.abi
 
-        const waiter : WaiterCallback = await lwm.call_execute(address, fsig, args, abi)
+        const waiter: WaiterCallback = await lwm.call_execute(address, fsig, args, abi)
         await processWaiterCallbackAndFiles(waiter, lwm, fname)
         // saveLWMFile(lwm, fname)
     })
@@ -163,6 +163,26 @@ program
         const waiter: WaiterCallback = await lwm.call_execute(address, 'transfer(address,uint256)', [lwm.nameOrAddressToAddress(to), amount], erc20abi)
         await processWaiterCallbackAndFiles(waiter, lwm, fname)
         // saveLWMFile(lwm, fname)
+    })
+
+program
+    .command('transfernft')
+    .description('transfer an nft from the wallet')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the address of the nft contract')
+    .argument('<string>', 'the token id')
+    .argument('<string>', 'the address to send the token to')
+    .action(async (fname: string, nftaddress: string, tokenId: string, to: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+
+        // const tx = await lwm.transferNft(nftaddress, tokenId, to)
+        const waiter : WaiterCallback = await lwm.transferNft(nftaddress, tokenId, to)
+        await processWaiterCallbackAndFiles(waiter, lwm, fname)
+
+        // process.stdout.write(`tx hash: ${tx?.hash ?? 'No hash found on returned transaction object'}\n`)
+
+        // saveLWMFile(lwm, fname)
+        // console.log(`transfernft - finished!`)
     })
 
 program
@@ -314,23 +334,7 @@ program
         })
     })
 
-program
-    .command('transfernft')
-    .description('transfer an nft from the wallet')
-    .argument('<string>', 'the location of the key file')
-    .argument('<string>', 'the address of the nft contract')
-    .argument('<string>', 'the token id')
-    .argument('<string>', 'the address to send the token to')
-    .action(async (fname: string, nftaddress: string, tokenId: string, to: string) => {
-        const lwm: LamportWalletManager = loadLWMFile(fname)
 
-        const tx = await lwm.transferNft(nftaddress, tokenId, to)
-
-        process.stdout.write(`tx hash: ${tx?.hash ?? 'No hash found on returned transaction object'}\n`)
-
-        saveLWMFile(lwm, fname)
-        console.log(`transfernft - finished!`)
-    })
 
 
 

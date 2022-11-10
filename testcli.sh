@@ -19,4 +19,7 @@ npm start view "walletfiles/lwm3.json"
 # npm start transfer "walletfiles/lwm3.json" ccents pgtest 123456
 
 # execute 
-npm start execute "walletfiles/lwm3.json" ccents "transfer(address,uint256)" Dollar.json 0x94D4Da7bDe814ae3B7a3D25A108391018e1e495E 654321
+# npm start execute "walletfiles/lwm3.json" ccents "transfer(address,uint256)" Dollar.json 0x94D4Da7bDe814ae3B7a3D25A108391018e1e495E 654321
+
+# transfer nft
+npm start transfernft "walletfiles/lwm3.json" lab 168 pgtest

@@ -138,15 +138,16 @@ program
     .argument('<string>', 'the abi file of the contract to call')
     .argument('<string...>', 'arguments to be passed to the function call')
     .action(async (fname: string, address: string, fsig: string, abiFname: string, args: string[],) => {
-        // const lwm: LamportWalletManager = loadLWMFile(fname)
+        const lwm: LamportWalletManager = loadLWMFile(fname)
 
-        // const fs = require('fs')
-        // const s = fs.readFileSync(abiFname, 'utf8')
+        const fs = require('fs')
+        const s = fs.readFileSync(abiFname, 'utf8')
 
-        // const obj = JSON.parse(s)
-        // const abi = obj.abi
+        const obj = JSON.parse(s)
+        const abi = obj.abi
 
-        // await lwm.call_execute(address, fsig, args, abi)
+        const waiter : WaiterCallback = await lwm.call_execute(address, fsig, args, abi)
+        await processWaiterCallbackAndFiles(waiter, lwm, fname)
         // saveLWMFile(lwm, fname)
     })
 

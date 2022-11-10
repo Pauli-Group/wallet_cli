@@ -29,25 +29,23 @@ export default function formatOutput(__data: string[][]): void {
     })
 
     let output = ``
-    const data = df(_data.map((row) => {
+    const data = _data.map((row) => {
         if (row.length < longest_length) {
             const diff = longest_length - row.length
             return [...row, ...Array.from({ length: diff }, () => '')]
         }
         return row
-    }))
+    })
 
     let maxlinelength = 0
     for (let i = 0; i < data.length; i++) {
         let line = ``
-        for (let k = 0; k < data[i].length; k++) {
+        for (let k = 0; k < data[i].length; k++)
             line += `${box_drawings.light.v} ${data[i][k].padEnd(coloum_widths[k], '.')} `
-        }
         if (line.length > maxlinelength)
             maxlinelength = line.length
 
-        output += (`${line}${box_drawings.light.v}`)
-        output += (`\n`)
+        output += (`${line}${box_drawings.light.v}\n`)
     }
 
     const [top_line, bottom_line] = (() => {
@@ -76,11 +74,7 @@ export default function formatOutput(__data: string[][]): void {
         return [top_line, bottom_line]
     })()
 
-
-    output = `${top_line}\n${output}`
-
-    output += bottom_line
-    output += `\n`
+    output = `${top_line}\n${output}${bottom_line}\n`
 
     process.stdout.write(output)
 }

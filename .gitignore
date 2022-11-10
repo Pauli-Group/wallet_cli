@@ -4,6 +4,7 @@
 /keys
 /walletfiles
 /signedmessages
+/receipts
 .secret
 .env
 

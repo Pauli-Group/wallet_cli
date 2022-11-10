@@ -96,7 +96,6 @@ type State = {
     friends: Friend[]
 }
 
-
 /**
  * @name LamportWalletManager
  * @description A class to manage all the logic for the lamport wallet interactions
@@ -275,9 +274,13 @@ export default class LamportWalletManager {
         const gasWallet = new ethers.Wallet(this.state.eoa_gas_pri, provider)
         const lamportwallet: ethers.Contract = new ethers.Contract(this.state.walletAddress, walletabi, gasWallet)
 
-        await lamportwallet.setTenRecoveryPKHs(tenPKHs, current_keys.pub, sig.map(s => `0x${s}`), nextpkh)
+        const tx = await lamportwallet.setTenRecoveryPKHs(tenPKHs, current_keys.pub, sig.map(s => `0x${s}`), nextpkh)
 
         this.state.backup_keys = tenKeys
+        return async () => {
+            const provider = ethers.getDefaultProvider(this.state.network_provider_url)
+            return await provider.waitForTransaction(tx.hash)
+        }
     }
 
     /**
@@ -436,7 +439,7 @@ export default class LamportWalletManager {
 
         const name = await currency.name()
         const symbol = await currency.symbol()
-        const balance : string = await currency.balanceOf(this.state.walletAddress)
+        const balance: string = await currency.balanceOf(this.state.walletAddress)
         return [name, symbol, balance]
     }
 
@@ -546,14 +549,14 @@ export default class LamportWalletManager {
         this.state.eoa_gas_pri = eoa_gas_pri
     }
 
-/**
- * @name view
- * @description gather all the data needed to visualize the wallet, returs an array of matrices of strings
- * @date November 8th 2022
- * @author William Doyle
- */
-    async view () : Promise<string[][][]> {
-        const tables : string[][][] = []
+    /**
+     * @name view
+     * @description gather all the data needed to visualize the wallet, returs an array of matrices of strings
+     * @date November 8th 2022
+     * @author William Doyle
+     */
+    async view(): Promise<string[][][]> {
+        const tables: string[][][] = []
 
 
         // tables.push([

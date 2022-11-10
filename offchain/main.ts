@@ -6,22 +6,10 @@ import { df } from './functions'
 import * as _erc20abi from '../abi/erc20abi.json'
 import * as _erc721abi from '../abi/erc721abi.json'
 import { randomBytes } from 'crypto'
+import { ethers } from 'ethers'
 
 const erc20abi = _erc20abi.default
 const erc721abi = _erc721abi.default
-
-function loadLWMFile(fname: string): LamportWalletManager {
-    const fs = require('fs')
-    const s = fs.readFileSync(fname, 'utf8')
-    const lwm = LamportWalletManager.fromJSON(s)
-    return lwm
-}
-
-function saveLWMFile(lwm: LamportWalletManager, fname: string) {
-    const s = lwm.toJSON()
-    const fs = require('fs')
-    fs.writeFileSync(fname, s)
-}
 
 const startTimer = () => {
     const start = new Date().getTime()
@@ -30,6 +18,46 @@ const startTimer = () => {
         return (end - start) / 1000
     }
 }
+
+function loadLWMFile(fname: string): LamportWalletManager {
+    const fs = require('fs')
+    const s = fs.readFileSync(fname, 'utf8')
+    const lwm = LamportWalletManager.fromJSON(s)
+    return lwm
+}
+
+
+function saveLWMFile(lwm: LamportWalletManager, fname: string) {
+    const s = lwm.toJSON()
+    const fs = require('fs')
+    fs.writeFileSync(fname, s)
+
+    // check if fname.tmp exists
+    if (fs.existsSync(fname + '.tmp')) {
+        process.stdout.write(`Removing ${fname}.tmp\n`) 
+        fs.unlinkSync(fname + '.tmp')
+    }
+}
+
+function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm : LamportWalletManager) {
+
+    // use data in lwm to build unique file name
+    const fname = `receipts/${lwm.state.chainId}_${lwm.state.walletAddress}.json`
+
+    // if the file exists, read it in
+    const fs = require('fs')
+    const data = fs.existsSync(fname) ? JSON.parse(fs.readFileSync(fname, 'utf8')) : [] 
+
+    // add the receipt to the data
+    data.push(receipt)
+
+    // write the data back out
+    fs.writeFileSync(fname, JSON.stringify(data, null, 2))
+
+
+}
+
+
 
 program
     .name('Lamport Wallet CLI by Pauli Group')
@@ -55,9 +83,15 @@ program
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        await lwm.call_setTenRecoveryPKHs()
+        const waiter: () => Promise<ethers.providers.TransactionReceipt> = await lwm.call_setTenRecoveryPKHs()
+        saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
+        process.stdout.write(`Waiting for transaction to be confirmed.\n`)
+        const receipt : ethers.providers.TransactionReceipt = await waiter()
+        process.stdout.write(`Confirmed. Saving...\n`)
         saveLWMFile(lwm, fname)
-        process.stdout.write(`Saved Recovery Keys.\n`)
+
+        process.stdout.write(`Saving receipt...\n`)
+        saveReceipt(receipt, lwm)
     })
 
 program
@@ -292,7 +326,9 @@ program
     .argument('<string>', 'name of blockchain to use')
     .action(async (gasKey: string, blockchain: string) => {
         const lwm: LamportWalletManager = await LamportWalletManager.buyNew(gasKey, blockchain)
-        saveLWMFile(lwm, `walletfiles/new_wallet_${lwm.state.walletAddress}.json`)
+        const fname = `walletfiles/new_wallet_${lwm.state.walletAddress}.json`
+        saveLWMFile(lwm, fname)
+        process.stdout.write(`Wallet File Saved at "${fname}"\n`)
     })
 
 program.parse()

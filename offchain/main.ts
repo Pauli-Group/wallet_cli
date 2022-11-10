@@ -57,6 +57,7 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         await lwm.call_setTenRecoveryPKHs()
         saveLWMFile(lwm, fname)
+        process.stdout.write(`Saved Recovery Keys.\n`)
     })
 
 program
@@ -126,58 +127,6 @@ program
         process.stdout.write(`Signature saved in 'signedmessages' directory\n`)
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 program
     .command('view')
     .description('view the current state of the wallet')
@@ -190,77 +139,53 @@ program
         const promises_of_nsb_for_nft = lwm.state?.nft_contracts?.map(c => lwm.getNFTInfo(c)) ?? []
 
         {
-            process.stdout.write('Balances\n')
+            process.stdout.write('\nAddresses And Balances\n')
             const data: string[][] = []
-            const balance = await lwm.ethBalance()
-            data.push(['address', lwm.state.walletAddress])
-            data.push(['balance', balance])
-
-            const gasAddress = lwm.gasWalletAddress
-            const gasBalance = await lwm.gasEthBalance()
-            data.push(['gas address', gasAddress])
-            data.push(['gas balance', gasBalance])
-
-            const signerAddress = lwm.signingWalletAddress
-            data.push(['signer balance', signerAddress])
-
-            const signerBalance = await lwm.signingEthBalance()
-            data.push(['signer balance', signerBalance])
+            data.push(['Main Address', lwm.state.walletAddress])
+            data.push(['Main Balance', await lwm.ethBalance()])
+            data.push(['Gas Address', lwm.gasWalletAddress])
+            data.push(['Gas Balance', await lwm.gasEthBalance()])
+            data.push(['Signer Address', lwm.signingWalletAddress])
+            data.push(['Signer Balance', await lwm.signingEthBalance()])
             formatOutput(data)
         }
-
         {
             process.stdout.write(`\nCurrencies\n`)
-
             const data: string[][] = []
-
             for (let i = 0; i < lwm.state.currency_contracts?.length ?? 0; i++) {
                 const currency = lwm.state.currency_contracts[i]
                 const [name, symbol, balance] = await promises_of_nsb[i]
                 data.push([currency, name, symbol, balance.toString()])
             }
             formatOutput(data)
-
         }
-
         {
             process.stdout.write(`\nNFTs\n`)
-
             const data: string[][] = []
-
             for (let i = 0; i < lwm.state?.nft_contracts?.length ?? 0; i++) {
                 const nft = lwm.state.nft_contracts[i]
                 const [name, symbol, balance] = await promises_of_nsb_for_nft[i]
                 data.push([nft, name, symbol, balance.toString()])
             }
-
             formatOutput(data)
         }
-
         {
             process.stdout.write('\nRecovery PKHs\n')
-
             const data: string[][] = []
-
             for (let i = 0; i < lwm.state.backup_keys.length; i++) {
                 const key = lwm.state.backup_keys[i]
                 const pkh = KeyTracker.pkhFromPublicKey(key.pub)
                 data.push([pkh])
             }
-
             formatOutput(data)
         }
         {
             process.stdout.write('\nCurrent Public Key Hash\n')
-
             const data: string[][] = []
             data.push(['From Local Key File', lwm.state.kt.pkh])
             data.push(['From Blockchain', await lwm.pkh_fromChain()])
-
             formatOutput(data)
         }
-
-
         {
             process.stdout.write('\nFriends\n')
             const data: string[][] = []
@@ -273,56 +198,6 @@ program
 
         process.stdout.write(`\ntimer: ${timer()}s\n`)
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 program
     .command('addcurrency')
@@ -348,6 +223,19 @@ program
     })
 
 program
+    .command('addfriend')
+    .description('add an alias to to an address')
+    .argument('<string>', 'the location of the key file')
+    .argument('<string>', 'the alias')
+    .argument('<string>', 'the address')
+    .action(async (fname: string, alias: string, address: string) => {
+        const lwm: LamportWalletManager = loadLWMFile(fname)
+        lwm.addFriend(alias, address)
+        saveLWMFile(lwm, fname)
+        process.stdout.write(`addfriend - finished!\n`)
+    })
+
+program
     .command('viewnfts')
     .description('view the nfts in the wallet')
     .argument('<string>', 'the location of the key file')
@@ -364,7 +252,6 @@ program
             process.stdout.write(`token uri.........${token.tokenURI}\n\n`)
         })
     })
-
 
 program
     .command('transfernft')
@@ -384,18 +271,7 @@ program
         console.log(`transfernft - finished!`)
     })
 
-program
-    .command('addfriend')
-    .description('add an alias to to an address')
-    .argument('<string>', 'the location of the key file')
-    .argument('<string>', 'the alias')
-    .argument('<string>', 'the address')
-    .action(async (fname: string, alias: string, address: string) => {
-        const lwm: LamportWalletManager = loadLWMFile(fname)
-        lwm.addFriend(alias, address)
-        saveLWMFile(lwm, fname)
-        process.stdout.write(`addfriend - finished!\n`)
-    })
+
 
 program
     .command('setgaseoa')

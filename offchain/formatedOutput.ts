@@ -55,6 +55,9 @@ export default function formatOutput(__data: string[][], padFunction : PadFunc =
         output += (`${line}${box_drawings.light.v}\n`)
     }
 
+    if (maxlinelength === 0)
+        return
+
     const [top_line, bottom_line] = (() => {
         const prev_line = output.split(`\n`)[0]
         const indexes = prev_line.split(``).map((char, i) => [char, i]).filter(([char, i]) => char === box_drawings.light.v).map(([char, i]) => i)

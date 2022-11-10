@@ -6,3 +6,5 @@
 /signedmessages
 .secret
 .env
+supportedBlockchains.json
+

@@ -83,10 +83,15 @@ program
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
+        
         const waiter: () => Promise<ethers.providers.TransactionReceipt> = await lwm.call_setTenRecoveryPKHs()
+        
         saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
+        
         process.stdout.write(`Waiting for transaction to be confirmed.\n`)
+        
         const receipt : ethers.providers.TransactionReceipt = await waiter()
+        
         process.stdout.write(`Confirmed. Saving...\n`)
         saveLWMFile(lwm, fname)
 

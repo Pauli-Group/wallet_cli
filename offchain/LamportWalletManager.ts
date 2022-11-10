@@ -24,6 +24,8 @@ type Friend = {
     name: string
 }
 
+type WaiterCallback = () => Promise<ethers.providers.TransactionReceipt>
+
 function lamport_getCurrentAndNextKeyData(k: KeyTracker): ({
     current_keys: LamportKeyPair;
     next_keys: LamportKeyPair;
@@ -253,7 +255,7 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_setTenRecoveryPKHs() {
+    async call_setTenRecoveryPKHs() : Promise<WaiterCallback> {
         const tenKeys = Array.from({ length: 10 }, mk_key_pair)
         const tenPKHs: string[] = tenKeys.map(pair => KeyTracker.pkhFromPublicKey(pair.pub))
 

@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import KeyTracker from './KeyTracker'
-import LamportWalletManager, { WaiterCallback } from './LamportWalletManager'
+import LamportWalletManager, { WaiterCallback, TokenInfo } from './LamportWalletManager'
 import formatOutput from './formatedOutput'
 import { df } from './functions'
 import * as _erc20abi from '../abi/erc20abi.json'
@@ -40,7 +40,6 @@ function saveLWMFile(lwm: LamportWalletManager, fname: string) {
 }
 
 function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm: LamportWalletManager) {
-
     // use data in lwm to build unique file name
     const fname = `receipts/${lwm.state.chainId}_${lwm.state.walletAddress}.json`
 
@@ -53,8 +52,6 @@ function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm: LamportW
 
     // write the data back out
     fs.writeFileSync(fname, JSON.stringify(data, null, 2))
-
-
 }
 
 function showReceipt(receipt: ethers.providers.TransactionReceipt) {
@@ -148,7 +145,6 @@ program
 
         const waiter: WaiterCallback = await lwm.call_execute(address, fsig, args, abi)
         await processWaiterCallbackAndFiles(waiter, lwm, fname)
-        // saveLWMFile(lwm, fname)
     })
 
 program
@@ -162,7 +158,6 @@ program
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const waiter: WaiterCallback = await lwm.call_execute(address, 'transfer(address,uint256)', [lwm.nameOrAddressToAddress(to), amount], erc20abi)
         await processWaiterCallbackAndFiles(waiter, lwm, fname)
-        // saveLWMFile(lwm, fname)
     })
 
 program
@@ -174,15 +169,8 @@ program
     .argument('<string>', 'the address to send the token to')
     .action(async (fname: string, nftaddress: string, tokenId: string, to: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-
-        // const tx = await lwm.transferNft(nftaddress, tokenId, to)
         const waiter : WaiterCallback = await lwm.transferNft(nftaddress, tokenId, to)
         await processWaiterCallbackAndFiles(waiter, lwm, fname)
-
-        // process.stdout.write(`tx hash: ${tx?.hash ?? 'No hash found on returned transaction object'}\n`)
-
-        // saveLWMFile(lwm, fname)
-        // console.log(`transfernft - finished!`)
     })
 
 program
@@ -192,7 +180,7 @@ program
     .argument('<string>', 'the message to sign')
     .action(async (fname: string, message: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        // sign message
+        
         const sig = await lwm.eip1271Sign(message)
         process.stdout.write(`Signature: ${sig}\n`)
 
@@ -323,20 +311,16 @@ program
     .argument('<string>', 'the address of the nft contract')
     .action(async (fname: string, address: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        const myTokens = await lwm.getMyTokens(address)
+        const myTokens : TokenInfo[] | null = await lwm.getMyTokens(address)
         if (myTokens === null) {
             process.stdout.write(`this contract (${address}) does not support ERC721Enumerable\n`)
             return
         }
-        myTokens.forEach((token) => {
-            process.stdout.write(`token id...........${token.tokenId}\n`)
-            process.stdout.write(`token uri.........${token.tokenURI}\n\n`)
-        })
+
+        const data: string[][] = []
+        myTokens.forEach((token : TokenInfo) =>    data.push([`Token ID`, token.tokenId.toString(), `Token URI`, token.tokenURI]))
+        formatOutput(data)
     })
-
-
-
-
 
 program
     .command('setgaseoa')

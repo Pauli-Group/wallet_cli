@@ -14,7 +14,7 @@ const walletabi = _walletabi.default
 const erc20abi = _erc20abi.default
 const erc721abi = _erc721abi.default
 
-type TokenInfo = {
+export type TokenInfo = {
     tokenId: string
     tokenURI: string
 }

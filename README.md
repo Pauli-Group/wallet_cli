@@ -65,3 +65,5 @@ To View The Documentation For A Command:
 To Change The RPC Endpoint (potentially to your own full node):
 
     edit the `rpc` field of the relevent blockchain in supportedBlockchains.json and rebuild with `npx tsc`
+
+    Also make sure to change the 'network_provider_url' in your wallet file to the same endpoint

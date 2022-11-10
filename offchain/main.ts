@@ -71,23 +71,25 @@ function showReceipt(receipt: ethers.providers.TransactionReceipt) {
     formatOutput(data)
 }
 
+/**
+ * @name processWaiterCallbackAndFiles
+ * @description saves tempory key file, waits for transaction to be confirmed, saves the key file and deletes the tempory file, saves the receipt, and displays the receipt
+ * @date November 10th 2022
+ * @author William Doyle
+ */
+async function processWaiterCallbackAndFiles(waiter: WaiterCallback, lwm: LamportWalletManager, fname: string): Promise<void> {
+    saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
 
-async function processWaiterCallbackAndFiles(waiter : WaiterCallback, lwm: LamportWalletManager, fname : string) : Promise<void> {
+    process.stdout.write(`Waiting for transaction to be confirmed.\n`)
+    const receipt: ethers.providers.TransactionReceipt = await waiter()
 
-        saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
+    process.stdout.write(`Confirmed. Saving...\n`)
+    saveLWMFile(lwm, fname) // also deletes the temporary file
 
-        process.stdout.write(`Waiting for transaction to be confirmed.\n`)
+    process.stdout.write(`Saving receipt...\n`)
+    saveReceipt(receipt, lwm)
 
-        const receipt: ethers.providers.TransactionReceipt = await waiter()
-
-        process.stdout.write(`Confirmed. Saving...\n`)
-        saveLWMFile(lwm, fname) // also deletes the temporary file
-
-        process.stdout.write(`Saving receipt...\n`)
-        saveReceipt(receipt, lwm)
-
-        showReceipt(receipt)
-
+    showReceipt(receipt)
 }
 
 program
@@ -104,7 +106,7 @@ program
     .action(async (fname: string, address: string, amount: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const waiter: WaiterCallback = await lwm.call_sendEther(address, amount)
-        processWaiterCallbackAndFiles(waiter, lwm, fname)
+        await processWaiterCallbackAndFiles(waiter, lwm, fname)
     })
 
 program
@@ -114,7 +116,7 @@ program
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
         const waiter: WaiterCallback = await lwm.call_setTenRecoveryPKHs()
-        processWaiterCallbackAndFiles(waiter, lwm, fname)
+        await processWaiterCallbackAndFiles(waiter, lwm, fname)
     })
 
 program
@@ -123,8 +125,8 @@ program
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        await lwm.call_recover()
-        saveLWMFile(lwm, fname)
+        const waiter: WaiterCallback = await lwm.call_recover()
+        await processWaiterCallbackAndFiles(waiter, lwm, fname)
     })
 
 program

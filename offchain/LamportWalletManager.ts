@@ -227,7 +227,7 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_recover() {
+    async call_recover(): Promise<WaiterCallback> {
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const gasWallet = new ethers.Wallet(this.state.eoa_gas_pri, provider)
         const lamportwallet: ethers.Contract = new ethers.Contract(this.state.walletAddress, walletabi, gasWallet)
@@ -247,8 +247,13 @@ export default class LamportWalletManager {
         if (!is_valid_sig)
             throw new Error(`Invalid Lamport Signature`)
 
-        await lamportwallet.recover(k2.pkh, recoveryKeyPair.pub, sig.map(s => `0x${s}`))
+        const tx = await lamportwallet.recover(k2.pkh, recoveryKeyPair.pub, sig.map(s => `0x${s}`))
         this.state.kt = k2
+
+        return async () => {
+            const provider = ethers.getDefaultProvider(this.state.network_provider_url)
+            return await provider.waitForTransaction(tx.hash)
+        }
     }
 
     /**

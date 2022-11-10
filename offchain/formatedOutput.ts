@@ -53,7 +53,6 @@ export default function formatOutput(__data: string[][]): void {
     // output = `${box_drawings.light.tl}${box_drawings.light.h.repeat(maxlinelength - 1)}${box_drawings.light.tr}\n${output}`
 
     const top_line = (() => {
-
         const default_line = `${box_drawings.light.tl}${box_drawings.light.h.repeat(maxlinelength - 1)}${box_drawings.light.tr}`
 
         // get the previous line
@@ -65,7 +64,6 @@ export default function formatOutput(__data: string[][]): void {
         if (indexes.length < 3)
             return default_line
 
-
         // discard first and last elements of the array
         const _indexes = indexes.slice(1, indexes.length - 1)
         console.log(_indexes)
@@ -75,15 +73,41 @@ export default function formatOutput(__data: string[][]): void {
             if (_indexes.includes(i))
                 return box_drawings.light.top_junction
             return char
-        }
-        ).join(``)
-
+        }).join(``)
     })()
 
     output = `${top_line}\n${output}`
 
 
-    output += `${box_drawings.light.bl}${box_drawings.light.h.repeat(maxlinelength - 1)}${box_drawings.light.br}`
+
+    // output += `${box_drawings.light.bl}${box_drawings.light.h.repeat(maxlinelength - 1)}${box_drawings.light.br}`
+
+    const bottom_line = (() => {
+        const default_line = `${box_drawings.light.bl}${box_drawings.light.h.repeat(maxlinelength - 1)}${box_drawings.light.br}`
+        // get the previous line
+        const prev_line = output.split(`\n`)[output.split(`\n`).length - 2]
+        // find indexes of the vertical lines
+        const indexes = prev_line.split(``).map((char, i) => [char, i]).filter(([char, i]) => char === box_drawings.light.v).map(([char, i]) => i)
+        console.log(indexes)
+
+        if (indexes.length < 3)
+            return default_line
+
+        // discard first and last elements of the array
+        const _indexes = indexes.slice(1, indexes.length - 1)
+        console.log(_indexes)
+
+        // replace the characters at the indexes with the bottom junction character
+        return default_line.split(``).map((char, i) => {
+            if (_indexes.includes(i))
+                return box_drawings.light.bottom_junction
+            return char
+        }).join(``)
+    })()
+
+
+
+    output += bottom_line
     output += `\n`
 
     process.stdout.write(output)

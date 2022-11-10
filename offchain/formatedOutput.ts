@@ -13,6 +13,10 @@ const box_drawings = {
     }
 }
 
+const padding_char = "*"
+// const padFunction = (str : string, length : number, pad_char : string) => str.padEnd(length, pad_char)
+const padFunction = (str : string, length : number, pad_char : string) => str.padStart(length, pad_char)
+
 /**
  *  @name formatOutput
  *  @description takes an array of arrays of strings and formats it into a table 
@@ -41,7 +45,8 @@ export default function formatOutput(__data: string[][]): void {
     for (let i = 0; i < data.length; i++) {
         let line = ``
         for (let k = 0; k < data[i].length; k++)
-            line += `${box_drawings.light.v} ${data[i][k].padEnd(coloum_widths[k], '.')} `
+            // line += `${box_drawings.light.v} ${data[i][k].padEnd(coloum_widths[k], padding_char)} `
+            line += `${box_drawings.light.v} ${padFunction(data[i][k], coloum_widths[k], padding_char)} `
         if (line.length > maxlinelength)
             maxlinelength = line.length
 

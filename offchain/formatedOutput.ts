@@ -13,9 +13,11 @@ const box_drawings = {
     }
 }
 
-const padding_char = "*"
+const DEFAULT_padding_char = " "
 // const padFunction = (str : string, length : number, pad_char : string) => str.padEnd(length, pad_char)
-const padFunction = (str : string, length : number, pad_char : string) => str.padStart(length, pad_char)
+type PadFunc = (arg1 : string, arg2 : number, arg3 : string) => string
+const DEFAULT_padFunction : PadFunc = (str : string, length : number, pad_char : string) => str.padStart(length, pad_char)
+
 
 /**
  *  @name formatOutput
@@ -23,7 +25,7 @@ const padFunction = (str : string, length : number, pad_char : string) => str.pa
  *  @date November 9th 2022
  *  @author William Doyle 
  */
-export default function formatOutput(__data: string[][]): void {
+export default function formatOutput(__data: string[][], padFunction : PadFunc = DEFAULT_padFunction, padding_char : string = DEFAULT_padding_char ): void {
     const _data = cpylck(__data) as string[][]
     const longest_length: number = Math.max(...(_data.map((row) => row.length)))
 

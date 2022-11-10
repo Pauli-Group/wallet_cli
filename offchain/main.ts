@@ -294,7 +294,7 @@ program
 
         {
             // display table of friends
-            process.stdout.write('Friends\n')
+            process.stdout.write('\nFriends\n')
             const data: string[][] = []
             for (let i = 0; i < (lwm.state?.friends ?? []).length; i++) {
                 const friend = lwm.state.friends[i]
@@ -304,9 +304,7 @@ program
             formatOutput(data)
         }
 
-        process.stdout.write('\n')
-        process.stdout.write(`timer: ${timer()}s\n`)
-        process.stdout.write('\n')
+        process.stdout.write(`\ntimer: ${timer()}s\n`)
     })
 
 

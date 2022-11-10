@@ -298,13 +298,17 @@ export default class LamportWalletManager {
      * @date November 1st 2022
      * @author William Doyle
      */
-    async call_execute(_contractAddress: string, fsig: string, args: string[], abi: any): Promise<any> {
+    async call_execute(_contractAddress: string, fsig: string, args: string[], abi: any): Promise<WaiterCallback> {
         const contractAddress = this.nameOrAddressToAddress(_contractAddress)
         const provider = ethers.getDefaultProvider(this.state.network_provider_url)
         const gasWallet = new ethers.Wallet(this.state.eoa_gas_pri, provider)
         const lamportwallet: ethers.Contract = new ethers.Contract(this.state.walletAddress, walletabi, gasWallet)
 
-        return await lamportwallet.execute(...buildExecuteArguments(this.state.kt, fsig, abi, contractAddress, args))
+        const tx = await lamportwallet.execute(...buildExecuteArguments(this.state.kt, fsig, abi, contractAddress, args))
+        return async () => {
+            const provider = ethers.getDefaultProvider(this.state.network_provider_url)
+            return await provider.waitForTransaction(tx.hash)
+        }
     }
 
     /**

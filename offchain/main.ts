@@ -34,19 +34,19 @@ function saveLWMFile(lwm: LamportWalletManager, fname: string) {
 
     // check if fname.tmp exists
     if (fs.existsSync(fname + '.tmp')) {
-        process.stdout.write(`Removing ${fname}.tmp\n`) 
+        process.stdout.write(`Removing ${fname}.tmp\n`)
         fs.unlinkSync(fname + '.tmp')
     }
 }
 
-function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm : LamportWalletManager) {
+function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm: LamportWalletManager) {
 
     // use data in lwm to build unique file name
     const fname = `receipts/${lwm.state.chainId}_${lwm.state.walletAddress}.json`
 
     // if the file exists, read it in
     const fs = require('fs')
-    const data = fs.existsSync(fname) ? JSON.parse(fs.readFileSync(fname, 'utf8')) : [] 
+    const data = fs.existsSync(fname) ? JSON.parse(fs.readFileSync(fname, 'utf8')) : []
 
     // add the receipt to the data
     data.push(receipt)
@@ -57,7 +57,19 @@ function saveReceipt(receipt: ethers.providers.TransactionReceipt, lwm : Lamport
 
 }
 
+function showReceipt(receipt: ethers.providers.TransactionReceipt) {
+    const data: string[][] = []
 
+    data.push([`To`, receipt.to])
+    data.push([`From`, receipt.from])
+    data.push([`Gas Used`, receipt.gasUsed.toString()])
+    data.push([`Block Number`, receipt.blockNumber.toString()])
+    data.push([`Block Hash`, receipt.blockHash])
+    data.push([`Type`, receipt.type.toString()])
+    data.push([`Confirmations`, receipt.confirmations.toString()])
+
+    formatOutput(data)
+}
 
 program
     .name('Lamport Wallet CLI by Pauli Group')
@@ -83,20 +95,23 @@ program
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        
+
         const waiter: () => Promise<ethers.providers.TransactionReceipt> = await lwm.call_setTenRecoveryPKHs()
-        
+
         saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
-        
+
         process.stdout.write(`Waiting for transaction to be confirmed.\n`)
-        
-        const receipt : ethers.providers.TransactionReceipt = await waiter()
-        
+
+        const receipt: ethers.providers.TransactionReceipt = await waiter()
+
         process.stdout.write(`Confirmed. Saving...\n`)
-        saveLWMFile(lwm, fname)
+        saveLWMFile(lwm, fname) // also deletes the temporary file
 
         process.stdout.write(`Saving receipt...\n`)
         saveReceipt(receipt, lwm)
+
+        showReceipt(receipt)
+
     })
 
 program

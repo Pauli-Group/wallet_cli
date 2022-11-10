@@ -4,7 +4,7 @@ npx tsc
 # npm start new <gas private key> sepolia
 
 # view everything
-# npm start view "walletfiles/lwm3.json"
+npm start view "walletfiles/lwm3.json"
 
 # send eth
 # npm start sendeth "walletfiles/lwm3.json" pgtest 123456

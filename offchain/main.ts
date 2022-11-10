@@ -72,7 +72,7 @@ function showReceipt(receipt: ethers.providers.TransactionReceipt) {
 }
 
 
-async function processReceipt(waiter : WaiterCallback, lwm: LamportWalletManager, fname : string) : Promise<void> {
+async function processWaiterCallbackAndFiles(waiter : WaiterCallback, lwm: LamportWalletManager, fname : string) : Promise<void> {
 
         saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
 
@@ -103,25 +103,8 @@ program
     .argument('<string>', 'amount of ETH to send')
     .action(async (fname: string, address: string, amount: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        // const tx_hash = await lwm.call_sendEther(address, amount)
-        // process.stdout.write(`Transaction Hash: ${tx_hash}\n`)
         const waiter: WaiterCallback = await lwm.call_sendEther(address, amount)
-
-        processReceipt(waiter, lwm, fname)
-        // saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
-
-        // process.stdout.write(`Waiting for transaction to be confirmed.\n`)
-
-        // const receipt: ethers.providers.TransactionReceipt = await waiter()
-
-        // process.stdout.write(`Confirmed. Saving...\n`)
-        // saveLWMFile(lwm, fname) // also deletes the temporary file
-
-        // process.stdout.write(`Saving receipt...\n`)
-        // saveReceipt(receipt, lwm)
-
-        // showReceipt(receipt)
-        // saveLWMFile(lwm, fname)
+        processWaiterCallbackAndFiles(waiter, lwm, fname)
     })
 
 program
@@ -130,23 +113,8 @@ program
     .argument('<string>', 'the location of the key file')
     .action(async (fname: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-
         const waiter: WaiterCallback = await lwm.call_setTenRecoveryPKHs()
-
-        processReceipt(waiter, lwm, fname)
-        // saveLWMFile(lwm, `${fname}.tmp`) // save a temporary file while transaction is in flight
-
-        // process.stdout.write(`Waiting for transaction to be confirmed.\n`)
-
-        // const receipt: ethers.providers.TransactionReceipt = await waiter()
-
-        // process.stdout.write(`Confirmed. Saving...\n`)
-        // saveLWMFile(lwm, fname) // also deletes the temporary file
-
-        // process.stdout.write(`Saving receipt...\n`)
-        // saveReceipt(receipt, lwm)
-
-        // showReceipt(receipt)
+        processWaiterCallbackAndFiles(waiter, lwm, fname)
     })
 
 program

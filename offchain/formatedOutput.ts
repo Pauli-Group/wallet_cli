@@ -1,4 +1,4 @@
-import { df, cpylck, unzipN } from "./functions";
+import { unzipN, df, cpylck } from "freshpauligroup";
 
 const box_drawings = {
     light: {

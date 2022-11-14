@@ -1,57 +1,6 @@
-import { KeyPair, RandPair, Sig, PubPair } from "./Types"
 import BigNumber from "bignumber.js"
 import { randomBytes } from 'crypto'
-import { ethers } from 'ethers';
-
-const hash = (input: string) => ethers.utils.keccak256(ethers.utils.toUtf8Bytes(input))
-const hash_b = (input: string) => ethers.utils.keccak256(input)
-
-export function unzipN<Type>(arr: Type[][]): Type[][] {
-    // const arr = cpylck(_arr) as Type[][]
-
-    if (arr.length === 0)
-        return []
-
-    // if all subarrays are not same length ... make them so
-    const longest_length: number = Math.max(...(arr.map((row) => row.length)))
-    const arr2 = df(arr.map((row) => {
-        if (row.length < longest_length) {
-            const diff = longest_length - row.length
-            return [...row, ...Array.from({ length: diff }, () => '')]
-        }
-        return row
-    }))
-
-    return Array.from({ length: arr2[0].length })
-        .map((_, i) => Array.from({ length: arr2.length })
-            .map((_, k) => arr2[k][i]))
-}
-
-export function deepFreeze(object: any) {
-    // Retrieve the property names defined on object
-    const propNames = Object.getOwnPropertyNames(object);
-
-    // Freeze properties before freezing self
-
-    for (const name of propNames) {
-        const value = object[name];
-
-        if (value && typeof value === "object") {
-            deepFreeze(value);
-        }
-    }
-
-    return Object.freeze(object);
-}
-
-export function df(object: any) {
-    return deepFreeze(object);
-}
-
-export function cpylck(obj: any) {
-    return deepFreeze(JSON.parse(JSON.stringify(obj)))
-}
-
+import {hash, hash_b, KeyPair, RandPair, Sig, PubPair} from 'freshpauligroup'
 
 /**
  * 
@@ -60,7 +9,7 @@ export function cpylck(obj: any) {
  */
 const pubFromPri = (pri: [string, string][]) => pri.map(p => ([hash_b(p[0]), hash_b(p[1])])) as PubPair[]
 
-export { hash, hash_b, pubFromPri }
+export { pubFromPri }
 
 /**
  * @name mk_key_pair

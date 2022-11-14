@@ -18,6 +18,7 @@
   "dependencies": {
     "bignumber.js": "^9.1.0",
     "commander": "^9.4.1",
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "freshpauligroup": "^1.0.8"
   }
 }

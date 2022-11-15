@@ -1,27 +1,8 @@
 import { program } from 'commander'
-// import KeyTracker from './KeyTracker'
-// import LamportWalletManager, { WaiterCallback, TokenInfo } from './LamportWalletManager'
-
+import { startTimer} from 'freshpauligroup'
 import LamportWalletManager, { WaiterCallback, TokenInfo } from 'lamportwalletmanager/LamportWalletManager'
 import formatOutput from './formatedOutput'
-// import * as _erc20abi from '../abi/erc20abi.json'
-// import * as _erc721abi from '../abi/erc721abi.json'
 import { ethers } from 'ethers'
-
-// const erc20abi = _erc20abi.default
-// const erc721abi = _erc721abi.default
-
-/**
- *  @name startTimer
- *  @author William Doyle 
- */
-const startTimer = () => {
-    const start = new Date().getTime()
-    return () => {
-        const end = new Date().getTime()
-        return (end - start) / 1000
-    }
-}
 
 /**
  * @name loadLWMFile
@@ -189,7 +170,6 @@ program
     .argument('<string>', 'the amount of tokens to transfer')
     .action(async (fname: string, address: string, to: string, amount: string) => {
         const lwm: LamportWalletManager = loadLWMFile(fname)
-        // const waiter: WaiterCallback = await lwm.call_execute(address, 'transfer(address,uint256)', [lwm.nameOrAddressToAddress(to), amount], erc20abi)
         const waiter : WaiterCallback = await lwm.transferErc20(address, to, amount)
         await processWaiterCallbackAndFiles(waiter, lwm, fname)
     })
@@ -277,7 +257,6 @@ program
             const data: string[][] = []
             for (let i = 0; i < lwm.state.backup_keys.length; i++) {
                 const key = lwm.state.backup_keys[i]
-                // const pkh = KeyTracker.pkhFromPublicKey(key.pub)
                 const pkh = LamportWalletManager.pkhFromPublicKey(key.pub)
                 data.push([pkh])
             }

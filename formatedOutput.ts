@@ -1,4 +1,4 @@
-import { unzipN, df, cpylck } from "freshpauligroup";
+import { unzipN, df, cpylck } from "lamportwalletmanager/src";
 
 const box_drawings = {
     light: {

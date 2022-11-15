@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "",
-    "start": "node javascript_build/offchain/main.js"
+    "start": "node javascript_build/main.js"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,6 @@
     "ethers": "^5.7.2",
     "fp-ts": "^2.13.1",
     "freshpauligroup": "^1.0.8",
-    "lamportwalletmanager": "^0.0.3"
+    "lamportwalletmanager": "^0.0.4"
   }
 }

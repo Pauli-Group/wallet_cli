@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import { startTimer} from 'freshpauligroup'
-import LamportWalletManager, { WaiterCallback, TokenInfo } from 'lamportwalletmanager/LamportWalletManager'
+import LamportWalletManager, { WaiterCallback, TokenInfo } from 'lamportwalletmanager/src/LamportWalletManager'
 import formatOutput from './formatedOutput'
 import { ethers } from 'ethers'
 

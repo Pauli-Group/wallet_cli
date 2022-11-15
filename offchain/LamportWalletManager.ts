@@ -1,7 +1,6 @@
 import { ethers } from 'ethers'
-import { hash_b, mk_key_pair, sign_hash, verify_signed_hash } from './functions';
+import { hash_b, mk_key_pair, sign_hash, verify_signed_hash , KeyPair, LamportKeyPair } from 'freshpauligroup'
 import KeyTracker from './KeyTracker'
-import { KeyPair, LamportKeyPair } from './Types'
 import * as _supportedBlockchains from '../supportedBlockchains.json'
 import * as _factoryabi from '../abi/factoryabi.json'
 import * as _walletabi from '../abi/walletabi.json'

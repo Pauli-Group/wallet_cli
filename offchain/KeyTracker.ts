@@ -1,7 +1,5 @@
-import { RandPair, PubPair, LamportKeyPair } from "./Types"
-import {mk_key_pair} from "./functions"
+import { hash_b,  mk_key_pair, RandPair, PubPair, LamportKeyPair } from 'freshpauligroup'
 import { ethers } from 'ethers'
-import { hash_b } from "freshpauligroup"
 
 // easy key management and generation
 export default class KeyTracker {

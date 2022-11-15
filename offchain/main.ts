@@ -1,11 +1,11 @@
 import { program } from 'commander'
 import KeyTracker from './KeyTracker'
-import LamportWalletManager, { WaiterCallback, TokenInfo } from './LamportWalletManager'
+// import LamportWalletManager, { WaiterCallback, TokenInfo } from './LamportWalletManager'
+
+import LamportWalletManager, { WaiterCallback, TokenInfo } from 'lamportwalletmanager/LamportWalletManager'
 import formatOutput from './formatedOutput'
-import { df } from './functions'
 import * as _erc20abi from '../abi/erc20abi.json'
 import * as _erc721abi from '../abi/erc721abi.json'
-import { randomBytes } from 'crypto'
 import { ethers } from 'ethers'
 
 const erc20abi = _erc20abi.default

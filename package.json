@@ -1,0 +1,25 @@
+{
+  "name": "wallet_cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "",
+    "start": "node javascript_build/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
+    "@types/node": "^18.11.9",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.1.0",
+    "commander": "^9.4.1",
+    "ethers": "^5.7.2",
+    "fp-ts": "^2.13.1",
+    "lamportwalletmanager": "^0.0.54"
+  }
+}

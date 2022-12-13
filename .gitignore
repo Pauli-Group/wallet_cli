@@ -1,0 +1,11 @@
+/node_modules
+/build
+/javascript_build
+/keys
+/walletfiles
+/signedmessages
+/receipts
+.secret
+.env
+do.sh
+testcli.sh

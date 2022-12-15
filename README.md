@@ -1,3 +1,20 @@
+
+# Requirements
+- Node (https://nodejs.org/en/download/)
+- A funded EOA to pay gas fees
+
+# Setup
+1. clone this repo
+2. run `npm i` to install the dependencies 
+3. run `npx tsc` to build
+4. run `npm start <command name> <arguments>` to interact with the contracts
+
+# Purchasing New Wallet
+    npm start new <gas paying EOA private key> <chain name>
+
+
+
+
 Things this repo does: 
 - [x] buy a new Lamport Wallet
 - [x] View Wallet Details
@@ -17,14 +34,6 @@ Planned Features:
 - [ ] support multiple blockchains (deploy factory + add to supportedBlockchains.json)
 - [ ] verify signatures as specified by EIP-1271 for other wallets 
 - [ ] see a list of known NFTs in my wallet - broken down by contract, showing token id and url
-
-Install: 
-
-    npm install
-    
-Build: 
-
-    npx tsc
 
 Buy New Wallet:
     

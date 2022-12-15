@@ -12,7 +12,11 @@
 # Purchasing New Wallet
     npm start new <gas paying EOA private key> <chain name>
 
+# View Wallet Details
+    npm start view <path to wallet file>
 
+# Send Ether
+    npm start sendeth <path to wallet file> <recipient address> <amount to send in wei>
 
 
 Things this repo does: 

@@ -18,6 +18,12 @@
 # Send Ether
     npm start sendeth <path to wallet file> <recipient address> <amount to send in wei>
 
+# Set Recovery Keys
+    npm start setrecovery <path to wallet file>
+
+# Use Recovery Keys
+    npm start recover <path to wallet file>
+
 
 Things this repo does: 
 - [x] buy a new Lamport Wallet

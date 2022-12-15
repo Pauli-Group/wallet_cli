@@ -48,3 +48,6 @@
 # Set Gas Wallet
     npm start setgaseoa <path to wallet file> <gas paying private key>
 
+# Sign Message With ECDSA Key on behalf of wallet (EIP1271 - Not A Quantum Secure Signature)
+    npm start ecdsasign <path to wallet file> <message to sign>
+

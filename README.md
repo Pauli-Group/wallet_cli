@@ -27,6 +27,12 @@
 # Execute Arbitrary Calls Via Anchor Wallet
     npm start execute <path to wallet file> <address of contract to call> <signature of function to call> <json file describing contract> <arguments to pass to function call>
 
+# Transfer an ERC721 token
+    npm start transfernft <path to wallet file> <NFT contract address> <token id> <recipient address>
+
+# Transfer an ERC20 token
+    npm start transfer <path to wallet file> <address of token contract> <amount to send>
+
 Things this repo does: 
 - [x] buy a new Lamport Wallet
 - [x] View Wallet Details

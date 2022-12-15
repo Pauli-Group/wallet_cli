@@ -24,6 +24,8 @@
 # Use Recovery Keys
     npm start recover <path to wallet file>
 
+# Execute Arbitrary Calls Via Anchor Wallet
+    npm start execute <path to wallet file> <address of contract to call> <signature of function to call> <json file describing contract> <arguments to pass to function call>
 
 Things this repo does: 
 - [x] buy a new Lamport Wallet
